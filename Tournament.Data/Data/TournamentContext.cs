@@ -7,13 +7,8 @@ using Tournament.Core.Entities;
 
 namespace Tournament.Data.Data
 {
-    public class TournamentContext : DbContext
+    public class TournamentContext(DbContextOptions<TournamentContext> options) : DbContext(options)
     {
-        public TournamentContext (DbContextOptions<TournamentContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<Tournament.Core.Entities.TournamentDetails> TournamentDetails { get; set; } = default!;
         public DbSet<Tournament.Core.Entities.Game> Games { get; set; } = default!;
     }
