@@ -15,16 +15,10 @@ namespace Tournament.Data.Controllers
 {
     [Route("api/TournamentDetails")]
     [ApiController]
-    public class TournamentDetailsController : ControllerBase
+    public class TournamentDetailsController(IUnitOfWork unitOfWork, IMapper mapper) : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        public TournamentDetailsController(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         // GET: api/TournamentDetails
         [HttpGet]

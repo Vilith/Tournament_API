@@ -10,14 +10,9 @@ using Tournament.Data.Data;
 
 namespace Tournament.Data.Repositories
 {
-    public class GameRepository : IGameRepository
+    public class GameRepository(TournamentContext context) : IGameRepository
     {
-        private readonly TournamentContext _context;
-
-        public GameRepository(TournamentContext context)
-        {
-            _context = context;
-        }
+        private readonly TournamentContext _context = context;
 
         public async Task<IEnumerable<Game>> GetAllAsync()
         {
