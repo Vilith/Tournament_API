@@ -10,6 +10,7 @@ using Tournament.Core.Entities;
 using Tournament.Core.Repositories;
 using Tournament.Core.DTO;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Tournament.Data.Controllers
 {
@@ -22,9 +23,9 @@ namespace Tournament.Data.Controllers
 
         // GET: api/TournamentDetails
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails()
+        public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(bool includeGames = false)
         {
-            var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync();
+            var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
             var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
             return Ok(dto);
         }
@@ -174,6 +175,31 @@ namespace Tournament.Data.Controllers
             //await _context.SaveChangesAsync();
 
             //return NoContent();
+        }
+
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult<TournamentDTO>> PatchTournament(int id, JsonPatchDocument<TournamentDTO> patchDocument)
+        {
+            if (patchDocument == null)            
+                return BadRequest("Patch document cannot be null.");
+            
+            var tournamentExists = await _unitOfWork.TournamentRepository.GetAsync(id);
+            if (tournamentExists == null) 
+                return NotFound($"Tournament with ID {id} not found.");
+
+            var dto = _mapper.Map<TournamentDTO>(tournamentExists);
+            patchDocument.ApplyTo(dto, ModelState);
+            TryValidateModel(ModelState);
+
+            if (!ModelState.IsValid)            
+                return UnprocessableEntity(ModelState);
+
+            _mapper.Map(dto, tournamentExists);
+            //_unitOfWork.TournamentRepository.Update(tournamentExists);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(dto);
+
         }
 
         private async Task<bool> TournamentDetailsExists(int id)

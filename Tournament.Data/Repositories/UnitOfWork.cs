@@ -14,11 +14,14 @@ namespace Tournament.Data.Repositories
         public ITournamentRepository TournamentRepository { get; }
         public IGameRepository GameRepository { get; }
 
-        public UnitOfWork(TournamentContext context)
+        public UnitOfWork(TournamentContext context, 
+            ITournamentRepository tournamentRepository, 
+            IGameRepository gameRepository)
+
         {
             _context = context;
-            TournamentRepository = new TournamentRepository(context);
-            GameRepository = new GameRepository(context);
+            TournamentRepository = tournamentRepository;
+            GameRepository = gameRepository;
         }                
 
         public async Task CompleteAsync()

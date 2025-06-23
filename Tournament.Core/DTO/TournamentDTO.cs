@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 namespace Tournament.Core.DTO
 {
     public class TournamentDTO
-    {        
+    {
+        public int Id { get; set; }
         public string? Title { get; set; }
         public DateTime StartDate { get; set; }
+
+        public List<GameDTO>? Games { get; set; }
     }
 }

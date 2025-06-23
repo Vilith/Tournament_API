@@ -1,15 +1,16 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Tournament.Data.Data;
+using Tournament.Core.DTO;
 using Tournament.Core.Entities;
 using Tournament.Core.Repositories;
-using AutoMapper;
-using Tournament.Core.DTO;
+using Tournament.Data.Data;
 
 namespace Tournament.Data.Controllers
 {
@@ -29,6 +30,18 @@ namespace Tournament.Data.Controllers
             return Ok(dto);
             //var game = await _unitOfWork.GameRepository.GetAllAsync();
             //return Ok(game);
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGamesByTitle(string title)
+        {
+            var games = await _unitOfWork.GameRepository.GetByTitleAsync(title);
+            if (!games.Any())
+            {
+                return NotFound($"No games with title: {title} found!");
+            }
+            var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
+            return Ok(dto);
         }
 
         // GET: api/Games/5
@@ -120,17 +133,42 @@ namespace Tournament.Data.Controllers
             return NoContent();
 
         }
-            //var game = await _context.Games.FindAsync(id);
-            //if (game == null)
-            //{
-            //    return NotFound();
-            //}
+        //var game = await _context.Games.FindAsync(id);
+        //if (game == null)
+        //{
+        //    return NotFound();
+        //}
 
-            //_context.Games.Remove(game);
-            //await _context.SaveChangesAsync();
+        //_context.Games.Remove(game);
+        //await _context.SaveChangesAsync();
 
-            //return NoContent();
-        
+        //return NoContent();
+
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult<GameDTO>> PatchGame(int id, JsonPatchDocument<GameDTO> patchDocument)
+        {
+            if (patchDocument == null)
+                return BadRequest("Patch document cannot be null.");
+
+            var existingGame = await _unitOfWork.GameRepository.GetAsync(id);
+            if (existingGame == null)
+                return NotFound($"Game with ID {id} not found.");
+
+            var dto = _mapper.Map<GameDTO>(existingGame);
+            patchDocument.ApplyTo(dto, ModelState);
+            TryValidateModel(dto);
+
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            _mapper.Map(dto, existingGame);
+            //_unitOfWork.GameRepository.Update(existingGame);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(dto);
+        }
+
+
 
         private async Task<bool> GameExists(int id)
         {
