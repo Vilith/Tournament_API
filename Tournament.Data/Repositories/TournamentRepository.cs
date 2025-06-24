@@ -10,15 +10,10 @@ using Tournament.Data.Data;
 
 namespace Tournament.Data.Repositories
 {
-    public class TournamentRepository : ITournamentRepository
+    public class TournamentRepository(TournamentContext context) : ITournamentRepository
     {
-        private readonly TournamentContext _context;
+        private readonly TournamentContext _context = context;
 
-        public TournamentRepository(TournamentContext context)
-        {
-            _context = context;
-        }
-        
         public async Task<IEnumerable<TournamentDetails>> GetAllAsync(bool includeGames)
         {
             if (includeGames)
@@ -43,25 +38,25 @@ namespace Tournament.Data.Repositories
             //.Include(t => t.Games)
             //.FirstOrDefaultAsync(t => t.Id == id);
         }
-        public async Task<bool> AnyAsync(int id)
-        {
-            return await _context.TournamentDetails.AnyAsync(t => t.Id == id);
-        }
+        public async Task<bool> AnyAsync(int id) => await _context.TournamentDetails.AnyAsync(t => t.Id == id);
+        //{
+            //return await _context.TournamentDetails.AnyAsync(t => t.Id == id);
+        //}
 
-        public void Add(TournamentDetails tournament)
-        {
-            _context.TournamentDetails.Add(tournament);
-        }
+        public void Add(TournamentDetails tournament) => _context.TournamentDetails.Add(tournament);
+        //{
+            //_context.TournamentDetails.Add(tournament);
+        //}
 
-        public void Update(TournamentDetails tournament)
-        {
-            _context.TournamentDetails.Update(tournament);
-        }
+        public void Update(TournamentDetails tournament) => _context.TournamentDetails.Update(tournament);
+        //{
+        //_context.TournamentDetails.Update(tournament);
+        //}
 
-        public void Remove(TournamentDetails tournament)
-        {
-            _context.TournamentDetails.Remove(tournament);
-        }
+        public void Remove(TournamentDetails tournament) => _context.TournamentDetails.Remove(tournament);
+        //{
+        //_context.TournamentDetails.Remove(tournament);
+        //}
 
     }
 }

@@ -50,6 +50,7 @@ namespace Tournament.Data
                 await app.SeedDataAsync();
             }
 
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
