@@ -23,16 +23,46 @@ namespace Tournament.Data.Controllers
 
         // GET: api/TournamentDetails
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(bool includeGames = false)
+        public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(
+            [FromQuery] bool includeGames = false,
+            [FromQuery] string? title = null,
+            [FromQuery] string? sortBy = null)
         {
             var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                tournaments = tournaments
+                    .Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            tournaments = sortBy?.ToLower() switch
+            {
+                "title" => tournaments.OrderBy(t => t.Title).ToList(),
+                "startdate" => tournaments.OrderBy(t => t.StartDate).ToList(),
+                _ => tournaments
+            };
+
             var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
             return Ok(dto);
         }
 
+        //#region [Outcommenting]
+        //// GET: api/TournamentDetails
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(bool includeGames = false)
+        //{
+        //    var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
+        //    var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
+        //    return Ok(dto);
+        //}
+        //#endregion
+
         // GET: api/TournamentDetails/5
+               
         [HttpGet("{id}")]
-        public async Task<ActionResult<TournamentDetails>> GetTournamentDetails(int id)
+        public async Task<ActionResult<TournamentDTO>> GetTournamentDetails(int id)
         {
 
             var dto = await _unitOfWork.TournamentRepository.GetAsync(id);
@@ -201,6 +231,32 @@ namespace Tournament.Data.Controllers
             return Ok(dto);
 
         }
+
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(
+        //    [FromQuery] bool includeGames = false,
+        //    [FromQuery] string? title = null,
+        //    [FromQuery] string? sortBy = null)
+        //{
+        //    var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
+
+        //    if (!string.IsNullOrWhiteSpace(title))
+        //    {
+        //        tournaments = tournaments
+        //            .Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
+        //            .ToList();
+        //    }
+
+        //    tournaments = sortBy?.ToLower() switch
+        //    {
+        //        "title" => tournaments.OrderBy(t => t.Title).ToList(),
+        //        "startdate" => tournaments.OrderBy(t => t.StartDate).ToList(),
+        //        _ => tournaments
+        //    };
+
+        //    var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
+        //    return Ok(dto);
+        //}
 
         private async Task<bool> TournamentDetailsExists(int id)
         {
