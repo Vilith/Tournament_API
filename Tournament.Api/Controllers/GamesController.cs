@@ -23,7 +23,7 @@ namespace Tournament.Data.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGame()
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame()
         {
             var games = await _unitOfWork.GameRepository.GetAllAsync();
             var dto = _mapper.Map<IEnumerable<Game>>(games);
@@ -52,7 +52,7 @@ namespace Tournament.Data.Controllers
 
             if (dto == null)
             {
-                return NotFound();
+                return NotFound($"Game with ID {id} not found.");
             }
 
             return Ok(_mapper.Map<GameDTO>(dto));
@@ -74,11 +74,11 @@ namespace Tournament.Data.Controllers
         public async Task<IActionResult> PutGame(int id, GameDTO dto)
         {
             if (!await _unitOfWork.GameRepository.AnyAsync(id))            
-                return NotFound();
+                return NotFound($"Game with ID {id} not found.");
             
             var entity = await _unitOfWork.GameRepository.GetAsync(id);
             if (entity == null)            
-                return NotFound();
+                return NotFound($"Game with ID {id} not found.");
 
             entity.Title = dto.Title;
             entity.Time = dto.Time;
@@ -110,11 +110,14 @@ namespace Tournament.Data.Controllers
         [HttpPost]
         public async Task<ActionResult<Game>> PostGame(GameDTO dto)
         {
+            // Validate the DTO before mapping
             var entity = _mapper.Map<Game>(dto);
             _unitOfWork.GameRepository.Add(entity);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtAction(nameof(GetGame), new { id = entity.Id }, null);
+            // Mapping the entity back to DTO for the response
+            var createdDto = _mapper.Map<GameDTO>(entity);
+            return CreatedAtAction(nameof(GetGame), new { id = entity.Id }, createdDto);
         }
 
         // DELETE: api/Games/5
@@ -124,7 +127,7 @@ namespace Tournament.Data.Controllers
             var dto = await _unitOfWork.GameRepository.GetAsync(id);
             if (dto == null)
             {
-                return NotFound();
+                return NotFound($"Couldn't delete. Game with ID {id} not found.");
             }
 
             _unitOfWork.GameRepository.Remove(dto);
@@ -166,14 +169,7 @@ namespace Tournament.Data.Controllers
             await _unitOfWork.CompleteAsync();
 
             return Ok(dto);
-        }
 
-
-
-        private async Task<bool> GameExists(int id)
-        {
-            return await _unitOfWork.GameRepository.AnyAsync(id);
-            //return _context.Games.Any(e => e.Id == id);
         }
     }
 }

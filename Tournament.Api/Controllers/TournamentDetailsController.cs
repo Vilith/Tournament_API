@@ -156,7 +156,8 @@ namespace Tournament.Data.Controllers
             _unitOfWork.TournamentRepository.Add(entity);
             await _unitOfWork.CompleteAsync();
 
-            return CreatedAtAction(nameof(GetTournamentDetails), new { id = entity.Id }, null);
+            var createdDto = _mapper.Map<TournamentDTO>(entity);
+            return CreatedAtAction(nameof(GetTournamentDetails), new { id = entity.Id }, createdDto);
 
             //_unitOfWork.TournamentRepository.Add(tournamentDetails);
             //await _unitOfWork.CompleteAsync();
@@ -219,7 +220,7 @@ namespace Tournament.Data.Controllers
 
             var dto = _mapper.Map<TournamentDTO>(tournamentExists);
             patchDocument.ApplyTo(dto, ModelState);
-            TryValidateModel(ModelState);
+            TryValidateModel(dto);
 
             if (!ModelState.IsValid)            
                 return UnprocessableEntity(ModelState);
@@ -257,11 +258,6 @@ namespace Tournament.Data.Controllers
         //    var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
         //    return Ok(dto);
         //}
-
-        private async Task<bool> TournamentDetailsExists(int id)
-        {
-            return await _unitOfWork.TournamentRepository.AnyAsync(id);
-            //return _context.TournamentDetails.Any(e => e.Id == id);
-        }
+              
     }
 }
