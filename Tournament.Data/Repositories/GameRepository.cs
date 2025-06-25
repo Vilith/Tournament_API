@@ -14,6 +14,38 @@ namespace Tournament.Data.Repositories
     {
         private readonly TournamentContext _context = context;
 
+
+        public async Task<IEnumerable<Game>> GetFilteredAsync(DateTime? startDate, DateTime? endDate, string? title, string? sortBy)
+        {
+            IQueryable<Game> query = _context.Games;
+                       
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                var lowerTitle = title.ToLower();
+                query = query.Where(g => g.Title != null && g.Title.ToLower().Contains(lowerTitle));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(g => g.Time >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(g => g.Time <= endDate.Value);
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "title" => query.OrderBy(g => g.Title),
+                "time" => query.OrderBy(g => g.Time),
+                _ => query
+            };
+
+            return await query.ToListAsync();
+        }
+
         public async Task<IEnumerable<Game>> GetByTitleAsync(string title) => await _context.Games
             .Where(g => g.Title.Contains(title))
             .ToListAsync();
@@ -53,6 +85,7 @@ namespace Tournament.Data.Repositories
         //}
 
         public void Remove(Game game) => _context.Games.Remove(game);
+               
         //{
         //_context.Games.Remove(game);
         //}

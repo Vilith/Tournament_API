@@ -25,8 +25,12 @@ namespace Tournament.Data.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(
             [FromQuery] bool includeGames = false,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null,
             [FromQuery] string? title = null,
-            [FromQuery] string? sortBy = null)
+            [FromQuery] string? gameTitle = null, 
+            [FromQuery] string? sortBy = null
+            )
         {
             //var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
 
@@ -45,7 +49,7 @@ namespace Tournament.Data.Controllers
             //};
 
             var tournaments = await _unitOfWork.TournamentRepository
-                .GetFilteredAsync(includeGames, title, sortBy);
+                .GetFilteredAsync(includeGames, startDate, endDate, title, gameTitle, sortBy);
 
             var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
             return Ok(dto);

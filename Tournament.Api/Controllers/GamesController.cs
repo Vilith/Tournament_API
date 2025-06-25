@@ -23,11 +23,19 @@ namespace Tournament.Data.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame()
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame(            
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null,
+            [FromQuery] string? title = null,
+            [FromQuery] string? sortBy = null)
         {
-            var games = await _unitOfWork.GameRepository.GetAllAsync();
-            var dto = _mapper.Map<IEnumerable<Game>>(games);
+            var games = await _unitOfWork.GameRepository.GetFilteredAsync(startDate, endDate, title, sortBy);
+            var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
             return Ok(dto);
+
+            //var games = await _unitOfWork.GameRepository.GetAllAsync();
+            //var dto = _mapper.Map<IEnumerable<Game>>(games);
+            //return Ok(dto);
             //var game = await _unitOfWork.GameRepository.GetAllAsync();
             //return Ok(game);
         }

@@ -14,6 +14,55 @@ namespace Tournament.Data.Repositories
     {
         private readonly TournamentContext _context = context;
 
+
+        public async Task<IEnumerable<TournamentDetails>> GetFilteredAsync(
+            bool includeGames, 
+            DateTime? startDate,
+            DateTime? endDate,
+            string? title,
+            string? gameTitle,
+            string? sortBy
+            )
+        {
+            IQueryable<TournamentDetails> query = _context.TournamentDetails;
+
+            if (includeGames)
+            {
+                query = query.Include(t => t.Games);
+            }
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                var lowerTitle = title.ToLower();
+                query = query.Where(t => t.Title != null && t.Title.ToLower().Contains(lowerTitle));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(t => t.StartDate >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(t => t.StartDate <= endDate.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(gameTitle) && includeGames)
+            {
+                var lowerGameTitle = gameTitle.ToLower();
+                query = query.Where(t => t.Games!.Any(g => g.Title != null && g.Title.ToLower().Contains(lowerGameTitle)));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "title" => query.OrderBy(t => t.Title),
+                "startdate" => query.OrderBy(t => t.StartDate),
+                _ => query
+            };
+
+            return await query.ToListAsync();
+        }
+
         public async Task<IEnumerable<TournamentDetails>> GetAllAsync(bool includeGames)
         {
             if (includeGames)
@@ -54,29 +103,6 @@ namespace Tournament.Data.Repositories
         //}
 
         public void Remove(TournamentDetails tournament) => _context.TournamentDetails.Remove(tournament);
-
-        public async Task<IEnumerable<TournamentDetails>> GetFilteredAsync(bool includeGames, string? title, string? sortBy)
-        {
-            IQueryable<TournamentDetails> query = _context.TournamentDetails;
-
-            if (includeGames)
-            {
-                query = query.Include(t => t.Games);
-            }
-
-            if (!string.IsNullOrWhiteSpace(title))
-            {
-                query = query.Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
-            }
-
-            query = sortBy?.ToLower() switch
-            {
-                "title" => query.OrderBy(t => t.Title),
-                "startdate" => query.OrderBy(t => t.StartDate),
-                _ => query
-            };
-
-            return await query.ToListAsync();
-        }
+                
     }
 }
