@@ -28,21 +28,24 @@ namespace Tournament.Data.Controllers
             [FromQuery] string? title = null,
             [FromQuery] string? sortBy = null)
         {
-            var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
+            //var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
 
-            if (!string.IsNullOrWhiteSpace(title))
-            {
-                tournaments = tournaments
-                    .Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
+            //if (!string.IsNullOrWhiteSpace(title))
+            //{
+                //tournaments = tournaments
+                    //.Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
+                    //.ToList();
+            //}
 
-            tournaments = sortBy?.ToLower() switch
-            {
-                "title" => tournaments.OrderBy(t => t.Title).ToList(),
-                "startdate" => tournaments.OrderBy(t => t.StartDate).ToList(),
-                _ => tournaments
-            };
+            //tournaments = sortBy?.ToLower() switch
+            //{
+                //"title" => tournaments.OrderBy(t => t.Title).ToList(),
+                //"startdate" => tournaments.OrderBy(t => t.StartDate).ToList(),
+                //_ => tournaments
+            //};
+
+            var tournaments = await _unitOfWork.TournamentRepository
+                .GetFilteredAsync(includeGames, title, sortBy);
 
             var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
             return Ok(dto);

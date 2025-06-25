@@ -9,6 +9,7 @@ namespace Tournament.Core.Repositories
 {
     public interface ITournamentRepository
     {
+        Task<IEnumerable<TournamentDetails>> GetFilteredAsync(bool includeGames, string? title, string? sortBy);
         Task<IEnumerable<TournamentDetails>> GetAllAsync(bool includeGames);
         Task<TournamentDetails?> GetAsync(int id, bool includeGames = false);
         Task<bool> AnyAsync(int id);

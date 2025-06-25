@@ -54,9 +54,29 @@ namespace Tournament.Data.Repositories
         //}
 
         public void Remove(TournamentDetails tournament) => _context.TournamentDetails.Remove(tournament);
-        //{
-        //_context.TournamentDetails.Remove(tournament);
-        //}
 
+        public async Task<IEnumerable<TournamentDetails>> GetFilteredAsync(bool includeGames, string? title, string? sortBy)
+        {
+            IQueryable<TournamentDetails> query = _context.TournamentDetails;
+
+            if (includeGames)
+            {
+                query = query.Include(t => t.Games);
+            }
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                query = query.Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+            }
+
+            query = sortBy?.ToLower() switch
+            {
+                "title" => query.OrderBy(t => t.Title),
+                "startdate" => query.OrderBy(t => t.StartDate),
+                _ => query
+            };
+
+            return await query.ToListAsync();
+        }
     }
 }

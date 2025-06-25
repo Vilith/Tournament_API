@@ -27,9 +27,9 @@ namespace Tournament.Data.Data
             var tournamentFaker = new Faker<TournamentDetails>()
                 .RuleFor(t => t.Title, f => $"{f.Company.CompanyName()} Championship")
                 .RuleFor(t => t.StartDate, f => f.Date.Soon(30))
-                .RuleFor(t => t.Games, f => gameFaker.Generate(f.Random.Int(2, 5)));
+                .RuleFor(t => t.Games, f => gameFaker.Generate(f.Random.Int(5, 15)));
 
-            var tournaments = tournamentFaker.Generate(3);
+            var tournaments = tournamentFaker.Generate(10);
 
             context.TournamentDetails.AddRange(tournaments);
             await context.SaveChangesAsync();
