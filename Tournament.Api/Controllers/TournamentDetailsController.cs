@@ -11,6 +11,8 @@ using Tournament.Core.Repositories;
 using Tournament.Core.DTO;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
+using Tournament.Api.Parameters;
+
 
 namespace Tournament.Data.Controllers
 {
@@ -24,13 +26,7 @@ namespace Tournament.Data.Controllers
         // GET: api/TournamentDetails
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(
-            [FromQuery] bool includeGames = false,
-            [FromQuery] DateTime? startDate = null,
-            [FromQuery] DateTime? endDate = null,
-            [FromQuery] string? title = null,
-            [FromQuery] string? gameTitle = null, 
-            [FromQuery] string? sortBy = null
-            )
+            [FromQuery] TournamentFilterParameters parameters)
         {
             //var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
 
@@ -49,7 +45,7 @@ namespace Tournament.Data.Controllers
             //};
 
             var tournaments = await _unitOfWork.TournamentRepository
-                .GetFilteredAsync(includeGames, startDate, endDate, title, gameTitle, sortBy);
+                .GetFilteredAsync(parameters);
 
             var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
             return Ok(dto);

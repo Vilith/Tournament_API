@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tournament.Core.Entities;
+using Tournament.Api.Parameters;
 
 namespace Tournament.Core.Repositories
 {
     public interface ITournamentRepository
     {
-        Task<IEnumerable<TournamentDetails>> GetFilteredAsync(bool includeGames, DateTime? startDate, DateTime? endDate, string? title, string? gameTitle, string? sortBy);
+        //Task<IEnumerable<TournamentDetails>> GetFilteredAsync(bool includeGames, DateTime? startDate, DateTime? endDate, string? title, string? gameTitle, string? sortBy);
+        Task<IEnumerable<TournamentDetails>> GetFilteredAsync(TournamentFilterParameters parameters);
         Task<IEnumerable<TournamentDetails>> GetAllAsync(bool includeGames);
         Task<TournamentDetails?> GetAsync(int id, bool includeGames = false);
         Task<bool> AnyAsync(int id);

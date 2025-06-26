@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Tournament.Core.Repositories;
 using Tournament.Core.Entities;
 using Tournament.Data.Data;
+using Tournament.Api.Parameters;
 
 namespace Tournament.Data.Repositories
 {
@@ -15,45 +16,38 @@ namespace Tournament.Data.Repositories
         private readonly TournamentContext _context = context;
 
 
-        public async Task<IEnumerable<TournamentDetails>> GetFilteredAsync(
-            bool includeGames, 
-            DateTime? startDate,
-            DateTime? endDate,
-            string? title,
-            string? gameTitle,
-            string? sortBy
-            )
+        public async Task<IEnumerable<TournamentDetails>> GetFilteredAsync(TournamentFilterParameters parameters)
         {
             IQueryable<TournamentDetails> query = _context.TournamentDetails;
 
-            if (includeGames)
+            if (parameters.IncludeGames)
             {
                 query = query.Include(t => t.Games);
             }
 
-            if (!string.IsNullOrWhiteSpace(title))
+            if (!string.IsNullOrWhiteSpace(parameters.Title))
             {
-                var lowerTitle = title.ToLower();
+                var lowerTitle = parameters.Title.ToLower();
                 query = query.Where(t => t.Title != null && t.Title.ToLower().Contains(lowerTitle));
             }
 
-            if (startDate.HasValue)
+            if (parameters.StartDate.HasValue)
             {
-                query = query.Where(t => t.StartDate >= startDate.Value);
+                query = query.Where(t => t.StartDate >= parameters.StartDate.Value);
             }
 
-            if (endDate.HasValue)
+            if (parameters.EndDate.HasValue)
             {
-                query = query.Where(t => t.StartDate <= endDate.Value);
+                query = query.Where(t => t.StartDate <= parameters.EndDate.Value);
             }
 
-            if (!string.IsNullOrWhiteSpace(gameTitle) && includeGames)
+            if (!string.IsNullOrWhiteSpace(parameters.GameTitle) && parameters.IncludeGames)
             {
-                var lowerGameTitle = gameTitle.ToLower();
+                var lowerGameTitle = parameters.GameTitle.ToLower();
                 query = query.Where(t => t.Games!.Any(g => g.Title != null && g.Title.ToLower().Contains(lowerGameTitle)));
             }
 
-            query = sortBy?.ToLower() switch
+            query = parameters.SortBy?.ToLower() switch
             {
                 "title" => query.OrderBy(t => t.Title),
                 "startdate" => query.OrderBy(t => t.StartDate),
