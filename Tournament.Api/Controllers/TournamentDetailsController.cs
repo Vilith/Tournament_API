@@ -54,7 +54,7 @@ namespace Tournament.Data.Controllers
         // PUT: api/TournamentDetails/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTournamentDetails(int id, TournamentDTO dto)
+        public async Task<IActionResult> PutTournamentDetails(int id, UpdateTournamentDTO dto)
         {
             if (!await _unitOfWork.TournamentRepository.AnyAsync(id))
                 return NotFound();
@@ -63,9 +63,8 @@ namespace Tournament.Data.Controllers
             if (entity == null)
                 return NotFound();
 
-            entity.Title = dto.Title;
-            entity.StartDate = dto.StartDate;
-
+            _mapper.Map(dto, entity);
+            
             _unitOfWork.TournamentRepository.Update(entity);
             await _unitOfWork.CompleteAsync();
 
@@ -75,7 +74,7 @@ namespace Tournament.Data.Controllers
         // POST: api/TournamentDetails
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TournamentDetails>> PostTournamentDetails(TournamentDTO dto)
+        public async Task<ActionResult<TournamentDetails>> PostTournamentDetails(CreateTournamentDTO dto)
         {
             var entity = _mapper.Map<TournamentDetails>(dto);
             _unitOfWork.TournamentRepository.Add(entity);
