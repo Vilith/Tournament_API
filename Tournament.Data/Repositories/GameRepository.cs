@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tournament.Core.Entities;
+using Tournament.Core.Parameters;
 using Tournament.Core.Repositories;
 using Tournament.Data.Data;
+using Tournament.Api.Parameters;
 
 namespace Tournament.Data.Repositories
 {
@@ -15,39 +17,43 @@ namespace Tournament.Data.Repositories
         private readonly TournamentContext _context = context;
 
 
-        public async Task<IEnumerable<Game>> GetFilteredAsync(DateTime? startDate, DateTime? endDate, string? title, string? sortBy)
+        public async Task<IEnumerable<Game>> GetFilteredAsync(GameFilterParameters parameters)
         {
             IQueryable<Game> query = _context.Games;
                        
 
-            if (!string.IsNullOrWhiteSpace(title))
+            if (!string.IsNullOrWhiteSpace(parameters.Title))
             {
-                var lowerTitle = title.ToLower();
+                var lowerTitle = parameters.Title.ToLower();
                 query = query.Where(g => g.Title != null && g.Title.ToLower().Contains(lowerTitle));
             }
 
-            if (startDate.HasValue)
+            if (parameters.StartDate.HasValue)
             {
-                query = query.Where(g => g.Time >= startDate.Value);
+                query = query.Where(g => g.Time >= parameters.StartDate.Value);
             }
 
-            if (endDate.HasValue)
+            if (parameters.EndDate.HasValue)
             {
-                query = query.Where(g => g.Time <= endDate.Value);
+                query = query.Where(g => g.Time <= parameters.EndDate.Value);
             }
 
-            query = sortBy?.ToLower() switch
+            query = parameters.SortBy?.ToLower() switch
             {
                 "title" => query.OrderBy(g => g.Title),
                 "time" => query.OrderBy(g => g.Time),
                 _ => query
             };
 
+            query = query
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize);
+
             return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<Game>> GetByTitleAsync(string title) => await _context.Games
-            .Where(g => g.Title.Contains(title))
+            .Where(g => g.Title!.Contains(title))
             .ToListAsync();
 
         //{

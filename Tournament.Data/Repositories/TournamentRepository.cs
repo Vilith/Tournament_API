@@ -54,6 +54,10 @@ namespace Tournament.Data.Repositories
                 _ => query
             };
 
+            query = query
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize);
+
             return await query.ToListAsync();
         }
 

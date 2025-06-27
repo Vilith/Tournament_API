@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tournament.Core.DTO;
 using Tournament.Core.Entities;
+using Tournament.Core.Parameters;
 using Tournament.Core.Repositories;
 using Tournament.Data.Data;
 
@@ -23,13 +24,10 @@ namespace Tournament.Data.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame(            
-            [FromQuery] DateTime? startDate = null,
-            [FromQuery] DateTime? endDate = null,
-            [FromQuery] string? title = null,
-            [FromQuery] string? sortBy = null)
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame(
+            [FromQuery] GameFilterParameters parameters)
         {
-            var games = await _unitOfWork.GameRepository.GetFilteredAsync(startDate, endDate, title, sortBy);
+            var games = await _unitOfWork.GameRepository.GetFilteredAsync(parameters);
             var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
             return Ok(dto);
 
