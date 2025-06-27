@@ -28,39 +28,12 @@ namespace Tournament.Data.Controllers
         public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(
             [FromQuery] TournamentFilterParameters parameters)
         {
-            //var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
-
-            //if (!string.IsNullOrWhiteSpace(title))
-            //{
-                //tournaments = tournaments
-                    //.Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
-                    //.ToList();
-            //}
-
-            //tournaments = sortBy?.ToLower() switch
-            //{
-                //"title" => tournaments.OrderBy(t => t.Title).ToList(),
-                //"startdate" => tournaments.OrderBy(t => t.StartDate).ToList(),
-                //_ => tournaments
-            //};
-
             var tournaments = await _unitOfWork.TournamentRepository
                 .GetFilteredAsync(parameters);
 
             var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
             return Ok(dto);
-        }
-
-        //#region [Outcommenting]
-        //// GET: api/TournamentDetails
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(bool includeGames = false)
-        //{
-        //    var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
-        //    var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
-        //    return Ok(dto);
-        //}
-        //#endregion
+        }               
 
         // GET: api/TournamentDetails/5
                
@@ -75,16 +48,7 @@ namespace Tournament.Data.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<TournamentDTO>(dto));
-
-            //var tournamentDetails = await _unitOfWork.TournamentRepository.GetAsync(id);
-
-            //if (tournamentDetails == null)
-            //{
-            //return NotFound();
-            //}
-
-            //return Ok(tournamentDetails);
+            return Ok(_mapper.Map<TournamentDTO>(dto));                       
         }
 
         // PUT: api/TournamentDetails/5
@@ -108,48 +72,6 @@ namespace Tournament.Data.Controllers
             return NoContent();
         }
 
-        //if (id != tournamentDetails.Id)
-        //{
-        //return BadRequest();
-        //}
-
-        //if (!await _unitOfWork.TournamentRepository.AnyAsync(id))
-        //{
-        //return NotFound();
-        //}
-
-        //_unitOfWork.TournamentRepository.Update(tournamentDetails);
-        //await _unitOfWork.CompleteAsync();
-
-        //return NoContent();
-        //}
-
-        //if (id != tournamentDetails.Id)
-        //{
-        //return BadRequest();
-        //}
-
-        //_context.Entry(tournamentDetails).State = EntityState.Modified;
-
-        //try
-        //{
-        //await _context.SaveChangesAsync();
-        //}
-        //catch (DbUpdateConcurrencyException)
-        //{
-        //if (!TournamentDetailsExists(id))
-        //{
-        //return NotFound();
-        //}
-        //else
-        //{
-        //throw;
-        //}
-        //}
-
-        //return NoContent();
-        //}
-
         // POST: api/TournamentDetails
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -160,17 +82,7 @@ namespace Tournament.Data.Controllers
             await _unitOfWork.CompleteAsync();
 
             var createdDto = _mapper.Map<TournamentDTO>(entity);
-            return CreatedAtAction(nameof(GetTournamentDetails), new { id = entity.Id }, createdDto);
-
-            //_unitOfWork.TournamentRepository.Add(tournamentDetails);
-            //await _unitOfWork.CompleteAsync();
-
-            //return CreatedAtAction(nameof(GetTournamentDetails), new { id = tournamentDetails.Id }, tournamentDetails);
-
-            //_context.TournamentDetails.Add(tournamentDetails);
-            //await _context.SaveChangesAsync();
-
-            //return CreatedAtAction("GetTournamentDetails", new { id = tournamentDetails.Id }, tournamentDetails);
+            return CreatedAtAction(nameof(GetTournamentDetails), new { id = entity.Id }, createdDto);                        
         }
 
         // DELETE: api/TournamentDetails/5
@@ -186,29 +98,7 @@ namespace Tournament.Data.Controllers
             _unitOfWork.TournamentRepository.Remove(dto);
             await _unitOfWork.CompleteAsync();
 
-            return NoContent();
-
-
-            //var tournamentDetails = await _unitOfWork.TournamentRepository.GetAsync(id);
-            //if (tournamentDetails == null)
-            //{
-            //return NotFound();
-            //}
-
-            //_unitOfWork.TournamentRepository.Remove(tournamentDetails);
-            //await _unitOfWork.CompleteAsync();
-
-            //return NoContent();
-            //var tournamentDetails = await _context.TournamentDetails.FindAsync(id);
-            //if (tournamentDetails == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //_context.TournamentDetails.Remove(tournamentDetails);
-            //await _context.SaveChangesAsync();
-
-            //return NoContent();
+            return NoContent();                                    
         }
 
         [HttpPatch("{id:int}")]
@@ -228,39 +118,10 @@ namespace Tournament.Data.Controllers
             if (!ModelState.IsValid)            
                 return UnprocessableEntity(ModelState);
 
-            _mapper.Map(dto, tournamentExists);
-            //_unitOfWork.TournamentRepository.Update(tournamentExists);
+            _mapper.Map(dto, tournamentExists);            
             await _unitOfWork.CompleteAsync();
 
             return Ok(dto);
-
-        }
-
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(
-        //    [FromQuery] bool includeGames = false,
-        //    [FromQuery] string? title = null,
-        //    [FromQuery] string? sortBy = null)
-        //{
-        //    var tournaments = await _unitOfWork.TournamentRepository.GetAllAsync(includeGames);
-
-        //    if (!string.IsNullOrWhiteSpace(title))
-        //    {
-        //        tournaments = tournaments
-        //            .Where(t => t.Title != null && t.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
-        //            .ToList();
-        //    }
-
-        //    tournaments = sortBy?.ToLower() switch
-        //    {
-        //        "title" => tournaments.OrderBy(t => t.Title).ToList(),
-        //        "startdate" => tournaments.OrderBy(t => t.StartDate).ToList(),
-        //        _ => tournaments
-        //    };
-
-        //    var dto = _mapper.Map<IEnumerable<TournamentDTO>>(tournaments);
-        //    return Ok(dto);
-        //}
-              
+        }              
     }
 }

@@ -15,9 +15,10 @@ namespace Tournament.Core.Entities
         [MaxLength(60, ErrorMessage = "Name of the title has to be less than 60 characters")]
         public string? Title { get; set; }
         public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         // Navigation property to represent the relationship with Game entities
         public ICollection<Game>? Games { get; set; }
-        public DateTime EndDate { get; set; }
+        
     }
 }

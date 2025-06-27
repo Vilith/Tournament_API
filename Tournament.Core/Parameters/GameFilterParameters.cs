@@ -9,23 +9,20 @@ namespace Tournament.Core.Parameters
 {
     public class GameFilterParameters
     {
-        /*[FromQuery]*/
-        public DateTime? StartDate { get; set; }
-        /*[FromQuery]*/
-        public DateTime? EndDate { get; set; }
-        /*[FromQuery]*/
-        public string? Title { get; set; }
-        /*[FromQuery]*/
+        public DateTime? StartDate { get; set; }     
+        public DateTime? EndDate { get; set; }        
+        public string? Title { get; set; }        
         public string? SortBy { get; set; }
 
         public int PageNumber { get; set; } = 1;
-
+        // Validation for PageSize to not exceed a maximum value
         private int _pageSize = 10;
         private readonly int maxPageSize = 50;
         public int PageSize
         {
             get => _pageSize;
             set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
+
         }
     }
 }

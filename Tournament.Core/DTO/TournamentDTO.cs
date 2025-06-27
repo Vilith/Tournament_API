@@ -15,8 +15,9 @@ namespace Tournament.Core.DTO
         [MaxLength(60, ErrorMessage = "Name of the title has to be less than 60 characters")]
         public string? Title { get; init; }
         public DateTime StartDate { get; init; }
+        public DateTime EndDate { get; init; }
 
         public List<GameDTO>? Games { get; init; }
-        public DateTime EndDate { get; init; }
+        
     }
 }

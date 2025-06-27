@@ -27,29 +27,6 @@ namespace Tournament.Data.Data
             await context.SaveChangesAsync();
         }
 
-        //    var gameTitle = new[]
-        //    {
-        //        "League of Legends", "Dota 2", "Counter-Strike: Global Offensive",
-        //        "Valorant", "Overwatch", "Call of Duty", "FIFA", "PUBG", "Apex Legends", "Rainbow Six Siege",
-        //        "StarCraft II", "Hearthstone", "Fortnite", "Rocket League", "World of Warcraft"
-        //    };
-
-        //    var gameFaker = new Faker<Game>()
-        //        .RuleFor(g => g.Title, f => f.PickRandom(gameTitle))
-        //        .RuleFor(g => g.Time, f => f.Date.Future());
-
-        //    var tournamentFaker = new Faker<TournamentDetails>()
-        //        .RuleFor(t => t.Title, f => $"{f.Company.CompanyName()} Championship")
-        //        .RuleFor(t => t.StartDate, f => f.Date.Soon(30))
-        //        .RuleFor(t => t.Games, f => gameFaker.Generate(f.Random.Int(5, 15)));
-
-        //    var tournaments = tournamentFaker.Generate(10);
-
-        //    context.TournamentDetails.AddRange(tournaments);
-        //    await context.SaveChangesAsync();
-
-        //}
-
         private static TournamentDetails GenerateTournamentWithGames()
         {
 
@@ -111,7 +88,6 @@ namespace Tournament.Data.Data
 
             return dates.OrderBy(d => d).ToList();
         }
-
     }
 }
 

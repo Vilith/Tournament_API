@@ -3,22 +3,15 @@
 namespace Tournament.Api.Parameters
 {
     public class TournamentFilterParameters
-    {
-        /*[FromQuery]*/
-        public bool IncludeGames { get; set; } = false;
-        /*[FromQuery]*/
-        public DateTime? StartDate { get; set; }
-        /*[FromQuery]*/
-        public DateTime? EndDate { get; set; }
-        /*[FromQuery]*/
-        public string? Title { get; set; }
-        /*[FromQuery]*/
-        public string? GameTitle { get; set; }
-        /*[FromQuery]*/
+    {        
+        public bool IncludeGames { get; set; } = false;        
+        public DateTime? StartDate { get; set; }        
+        public DateTime? EndDate { get; set; }        
+        public string? Title { get; set; }        
+        public string? GameTitle { get; set; }        
         public string? SortBy { get; set; }
 
         public int PageNumber { get; set; } = 1;
-
         // Validation for PageSize to not exceed a maximum value
         private int _pageSize = 10;
         private readonly int maxPageSize = 50;
@@ -26,7 +19,7 @@ namespace Tournament.Api.Parameters
         {
             get => _pageSize;
             set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
-        }       
 
+        }
     }
 }

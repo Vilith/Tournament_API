@@ -30,12 +30,6 @@ namespace Tournament.Data.Controllers
             var games = await _unitOfWork.GameRepository.GetFilteredAsync(parameters);
             var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
             return Ok(dto);
-
-            //var games = await _unitOfWork.GameRepository.GetAllAsync();
-            //var dto = _mapper.Map<IEnumerable<Game>>(games);
-            //return Ok(dto);
-            //var game = await _unitOfWork.GameRepository.GetAllAsync();
-            //return Ok(game);
         }
 
         [HttpGet("search")]
@@ -62,16 +56,6 @@ namespace Tournament.Data.Controllers
             }
 
             return Ok(_mapper.Map<GameDTO>(dto));
-
-            //var game = await _unitOfWork.GameRepository.GetAsync(id);
-            ////var game = await _context.Games.FindAsync(id);
-
-            //if (game == null)
-            //{
-                //return NotFound();
-            //}
-
-            //return Ok(game);
         }
 
         // PUT: api/Games/5
@@ -93,22 +77,6 @@ namespace Tournament.Data.Controllers
             await _unitOfWork.CompleteAsync();
 
             return NoContent();
-
-
-            //if (id != game.Id)
-            //{
-                //return BadRequest();
-            //}
-
-            //if (!await _unitOfWork.GameRepository.AnyAsync(id))
-            //{
-                //return NotFound();
-            //}
-
-            //_unitOfWork.GameRepository.Update(game);
-            //await _unitOfWork.CompleteAsync();
-
-            //return NoContent();
         }
 
         // POST: api/Games
@@ -140,18 +108,7 @@ namespace Tournament.Data.Controllers
             await _unitOfWork.CompleteAsync();
 
             return NoContent();
-
-        }
-        //var game = await _context.Games.FindAsync(id);
-        //if (game == null)
-        //{
-        //    return NotFound();
-        //}
-
-        //_context.Games.Remove(game);
-        //await _context.SaveChangesAsync();
-
-        //return NoContent();
+        }        
 
         [HttpPatch("{id:int}")]
         public async Task<ActionResult<GameDTO>> PatchGame(int id, JsonPatchDocument<GameDTO> patchDocument)
@@ -170,12 +127,10 @@ namespace Tournament.Data.Controllers
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
-            _mapper.Map(dto, existingGame);
-            //_unitOfWork.GameRepository.Update(existingGame);
+            _mapper.Map(dto, existingGame);            
             await _unitOfWork.CompleteAsync();
 
             return Ok(dto);
-
         }
     }
 }

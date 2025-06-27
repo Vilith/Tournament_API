@@ -70,8 +70,8 @@ namespace Tournament.Data.Repositories
                     .Include(t => t.Games)
                     .ToListAsync();
             }
-            return await _context.TournamentDetails.ToListAsync();
 
+            return await _context.TournamentDetails.ToListAsync();
         }
 
         public async Task<TournamentDetails?> GetAsync(int id, bool includeGames = false)
@@ -80,27 +80,15 @@ namespace Tournament.Data.Repositories
             if (includeGames)
                 query = query.Include(t => t.Games);
 
-            return await query.FirstOrDefaultAsync(t => t.Id == id);
-
-            //return await _context.TournamentDetails
-            //.Include(t => t.Games)
-            //.FirstOrDefaultAsync(t => t.Id == id);
+            return await query.FirstOrDefaultAsync(t => t.Id == id);                        
         }
+
         public async Task<bool> AnyAsync(int id) => await _context.TournamentDetails.AnyAsync(t => t.Id == id);
-        //{
-            //return await _context.TournamentDetails.AnyAsync(t => t.Id == id);
-        //}
-
+       
         public void Add(TournamentDetails tournament) => _context.TournamentDetails.Add(tournament);
-        //{
-            //_context.TournamentDetails.Add(tournament);
-        //}
-
+       
         public void Update(TournamentDetails tournament) => _context.TournamentDetails.Update(tournament);
-        //{
-        //_context.TournamentDetails.Update(tournament);
-        //}
-
+       
         public void Remove(TournamentDetails tournament) => _context.TournamentDetails.Remove(tournament);
                 
     }
