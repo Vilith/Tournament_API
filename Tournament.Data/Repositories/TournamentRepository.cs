@@ -51,6 +51,7 @@ namespace Tournament.Data.Repositories
             {
                 "title" => query.OrderBy(t => t.Title),
                 "startdate" => query.OrderBy(t => t.StartDate),
+                "enddate" => query.OrderBy(t => t.EndDate),
                 _ => query
             };
 

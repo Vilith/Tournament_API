@@ -18,5 +18,6 @@ namespace Tournament.Core.Entities
 
         // Navigation property to represent the relationship with Game entities
         public ICollection<Game>? Games { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }

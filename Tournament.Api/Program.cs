@@ -20,7 +20,10 @@ namespace Tournament.Data
 
             //builder.Services.AddControllers();
             builder.Services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
-            .AddNewtonsoftJson()
+            .AddNewtonsoftJson(opt =>
+            {
+                opt.SerializerSettings.DateFormatString = "yyyy-MM-dd - HH:mm";
+            })
             .AddXmlDataContractSerializerFormatters();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

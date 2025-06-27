@@ -17,5 +17,6 @@ namespace Tournament.Core.DTO
         public DateTime StartDate { get; init; }
 
         public List<GameDTO>? Games { get; init; }
+        public DateTime EndDate { get; init; }
     }
 }
