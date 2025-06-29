@@ -51,7 +51,7 @@ namespace Tournament.Tests.Controllers
             var tournament = new TournamentDetails { Id = 1, Title = "Test" };
             var dto = new TournamentDTO { Id = 1, Title = "Test" };
 
-            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, false)).ReturnsAsync(tournament);
+            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, It.IsAny<bool>())).ReturnsAsync(tournament);
             MockMapper.Setup(m => m.Map<TournamentDTO>(tournament)).Returns(dto);
 
             var result = await Controller.GetTournamentDetails(1);
@@ -64,7 +64,7 @@ namespace Tournament.Tests.Controllers
         [Fact]
         public async Task GetTournamentDetails_ById_ReturnsNotFound_WhenNotFound()
         {
-            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, true)).ReturnsAsync((TournamentDetails)null!);
+            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, It.IsAny<bool>())).ReturnsAsync((TournamentDetails)null!);
 
             var result = await Controller.GetTournamentDetails(1);
 
@@ -99,7 +99,7 @@ namespace Tournament.Tests.Controllers
             var entity = new TournamentDetails { Id = 1, Title = "Old" };
 
             MockUnitOfWork.Setup(u => u.TournamentRepository.AnyAsync(1)).ReturnsAsync(true);
-            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, false)).ReturnsAsync(entity);
+            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, It.IsAny<bool>())).ReturnsAsync(entity);
             MockMapper.Setup(m => m.Map(updateDto, entity));
 
             MockUnitOfWork.Setup(u => u.TournamentRepository.Update(entity));
@@ -127,7 +127,7 @@ namespace Tournament.Tests.Controllers
         {
             var entity = new TournamentDetails { Id = 1, Title = "Test" };
 
-            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, false)).ReturnsAsync(entity);
+            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, It.IsAny<bool>())).ReturnsAsync(entity);
             MockUnitOfWork.Setup(u => u.TournamentRepository.Remove(entity));
             MockUnitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
 
@@ -139,7 +139,7 @@ namespace Tournament.Tests.Controllers
         [Fact]
         public async Task DeleteTournamentDetails_ReturnsNotFound_WhenNotFound()
         {
-            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, true)).ReturnsAsync((TournamentDetails)null!);
+            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, It.IsAny<bool>())).ReturnsAsync((TournamentDetails)null!);
 
             var result = await Controller.DeleteTournamentDetails(1);
 
@@ -159,7 +159,7 @@ namespace Tournament.Tests.Controllers
         [Fact]
         public async Task PatchTournament_ReturnsNotFound_WhenTournamentNotFound()
         {
-            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, true)).ReturnsAsync((TournamentDetails)null!);
+            MockUnitOfWork.Setup(u => u.TournamentRepository.GetAsync(1, It.IsAny<bool>())).ReturnsAsync((TournamentDetails)null!);
             var patchDoc = new JsonPatchDocument<TournamentDTO>();
 
             var result = await Controller.PatchTournament(1, patchDoc);
