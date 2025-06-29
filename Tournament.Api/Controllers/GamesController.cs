@@ -36,10 +36,9 @@ namespace Tournament.Data.Controllers
         public async Task<ActionResult<IEnumerable<GameDTO>>> GetGamesByTitle(string title)
         {
             var games = await _unitOfWork.GameRepository.GetByTitleAsync(title);
-            if (!games.Any())
-            {
+            if (!games.Any())            
                 return NotFound($"No games with title: {title} found!");
-            }
+            
             var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
             return Ok(dto);
         }
@@ -50,10 +49,9 @@ namespace Tournament.Data.Controllers
         {
             var dto = await _unitOfWork.GameRepository.GetAsync(id);
 
-            if (dto == null)
-            {
+            if (dto == null)            
                 return NotFound($"Game with ID {id} not found.");
-            }
+            
 
             return Ok(_mapper.Map<GameDTO>(dto));
         }
@@ -61,7 +59,7 @@ namespace Tournament.Data.Controllers
         // PUT: api/Games/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(int id, GameDTO dto)
+        public async Task<IActionResult> PutGame(int id, UpdateGameDTO dto)
         {
             if (!await _unitOfWork.GameRepository.AnyAsync(id))            
                 return NotFound($"Game with ID {id} not found.");
@@ -82,7 +80,7 @@ namespace Tournament.Data.Controllers
         // POST: api/Games
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Game>> PostGame(GameDTO dto)
+        public async Task<ActionResult<Game>> PostGame(CreateGameDTO dto)
         {
             // Validate the DTO before mapping
             var entity = _mapper.Map<Game>(dto);

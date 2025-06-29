@@ -120,7 +120,8 @@ namespace Tournament.Data.Controllers
             _mapper.Map(dto, tournamentExists);            
             await _unitOfWork.CompleteAsync();
 
-            return Ok(dto);
+            //return Ok(dto);
+            return dto;
         }              
     }
 }

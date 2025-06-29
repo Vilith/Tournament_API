@@ -15,6 +15,7 @@ namespace Tournament.Data.Data
         {
             // Entity to DTO mappings
             CreateMap<Game, GameDTO>().ReverseMap();
+            CreateMap<UpdateGameDTO, Game>().ReverseMap();
             CreateMap<CreateGameDTO, Game>();
 
             CreateMap<TournamentDetails, TournamentDTO>().ReverseMap();
