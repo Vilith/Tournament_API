@@ -12,6 +12,7 @@ namespace Tournament.Api.Parameters
         public string? SortBy { get; set; }
 
         public int PageNumber { get; set; } = 1;
+
         // Validation for PageSize to not exceed a maximum value
         private int _pageSize = 10;
         private readonly int maxPageSize = 50;

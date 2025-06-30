@@ -202,15 +202,6 @@ namespace Tournament.Tests.Controllers
             
             result.Value.Should().NotBeNull();
             result.Value.Title.Should().Be("New");
-
-            //result.Result.Should().BeOfType<OkObjectResult>();
-            //var okResult = result.Result as OkObjectResult;
-            //okResult.Should().NotBeNull();
-
-            //var returnedDto = okResult!.Value as TournamentDTO;
-            //returnedDto.Should().NotBeNull();
-            //returnedDto!.Title.Should().Be("New");
-
         }
 
         [Trait("TournamentDetailsController", "Validation")]

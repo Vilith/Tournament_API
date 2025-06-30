@@ -17,8 +17,7 @@ namespace Tournament.Data
                 options.UseSqlServer(builder.Configuration.GetConnectionString("TournamentContext") ?? throw new InvalidOperationException("Connection string 'TournamentContext' not found.")));
 
             // Add services to the container.
-
-            //builder.Services.AddControllers();
+                      
             builder.Services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
             .AddNewtonsoftJson(opt =>
             {
