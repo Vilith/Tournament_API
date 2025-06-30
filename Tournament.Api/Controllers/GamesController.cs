@@ -61,6 +61,11 @@ namespace Tournament.Data.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGame(int id, UpdateGameDTO dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (!await _unitOfWork.GameRepository.AnyAsync(id))            
                 return NotFound($"Game with ID {id} not found.");
             
@@ -82,6 +87,11 @@ namespace Tournament.Data.Controllers
         [HttpPost]
         public async Task<ActionResult<Game>> PostGame(CreateGameDTO dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             // Validate the DTO before mapping
             var entity = _mapper.Map<Game>(dto);
             _unitOfWork.GameRepository.Add(entity);

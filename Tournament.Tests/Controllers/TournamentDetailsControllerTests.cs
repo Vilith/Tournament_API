@@ -25,6 +25,7 @@ namespace Tournament.Tests.Controllers
         {            
         }
 
+        [Trait("TournamentDetailsController", "Get")]
         [Fact]
         public async Task GetTournamentDetails_ReturnsOkWithDTOs()
         {
@@ -45,6 +46,7 @@ namespace Tournament.Tests.Controllers
             okResult!.Value.Should().BeEquivalentTo(dtoList);
         }
 
+        [Trait("TournamentDetailsController", "Get")]
         [Fact]
         public async Task GetTournamentDetails_ById_ReturnsOk_WhenFound()
         {
@@ -61,6 +63,7 @@ namespace Tournament.Tests.Controllers
             okResult!.Value.Should().BeEquivalentTo(dto);
         }
 
+        [Trait("TournamentDetailsController", "Get")]
         [Fact]
         public async Task GetTournamentDetails_ById_ReturnsNotFound_WhenNotFound()
         {
@@ -71,6 +74,7 @@ namespace Tournament.Tests.Controllers
             result.Result.Should().BeOfType<NotFoundResult>();
         }
 
+        [Trait("TournamentDetailsController", "Post")]
         [Fact]
         public async Task PostTournamentDetails_ReturnsCreatedAtAction()
         {
@@ -92,6 +96,7 @@ namespace Tournament.Tests.Controllers
             createdAt.Value.Should().BeEquivalentTo(dto);
         }
 
+        [Trait("TournamentDetailsController", "Put")]
         [Fact]
         public async Task PutTournamentDetails_ReturnsNoContent_WhenSuccess()
         {
@@ -110,6 +115,7 @@ namespace Tournament.Tests.Controllers
             result.Should().BeOfType<NoContentResult>();
         }
 
+        [Trait("TournamentDetailsController", "Put")]
         [Fact]
         public async Task PutTournamentDetails_ReturnsNotFound_WhenNotFound()
         {
@@ -122,6 +128,7 @@ namespace Tournament.Tests.Controllers
             result.Should().BeOfType<NotFoundResult>();
         }
 
+        [Trait("TournamentDetailsController", "Delete")]
         [Fact]
         public async Task DeleteTournamentDetails_ReturnsNoContent_WhenSuccess()
         {
@@ -136,6 +143,7 @@ namespace Tournament.Tests.Controllers
             result.Should().BeOfType<NoContentResult>();
         }
 
+        [Trait("TournamentDetailsController", "Delete")]
         [Fact]
         public async Task DeleteTournamentDetails_ReturnsNotFound_WhenNotFound()
         {
@@ -146,6 +154,7 @@ namespace Tournament.Tests.Controllers
             result.Should().BeOfType<NotFoundResult>();
         }
 
+        [Trait("TournamentDetailsController", "Patch")]
         [Fact]
         public async Task PatchTournament_ReturnsBadRequest_WhenPatchDocumentIsNull()
         {
@@ -156,6 +165,7 @@ namespace Tournament.Tests.Controllers
             badRequest!.Value.Should().Be("Patch document cannot be null.");
         }
 
+        [Trait("TournamentDetailsController", "Patch")]
         [Fact]
         public async Task PatchTournament_ReturnsNotFound_WhenTournamentNotFound()
         {
@@ -169,6 +179,7 @@ namespace Tournament.Tests.Controllers
             notFound!.Value.Should().Be("Tournament with ID 1 not found.");
         }
 
+        [Trait("TournamentDetailsController", "Patch")]
         [Fact]
         public async Task PatchTournament_ReturnsOk_WhenSuccessful()
         {
@@ -201,6 +212,41 @@ namespace Tournament.Tests.Controllers
             //returnedDto!.Title.Should().Be("New");
 
         }
+
+        [Trait("TournamentDetailsController", "Validation")]
+        [Fact]
+        public async Task PostTournamentDetails_ReturnsBadRequest_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            var invalidDto = new CreateTournamentDTO { Title = null! };
+            Controller.ModelState.AddModelError("Title", "Title is required.");
+
+            // Act
+            var result = await Controller.PostTournamentDetails(invalidDto);
+
+            // Assert
+            var badRequest = result.Result as BadRequestObjectResult;
+            badRequest.Should().NotBeNull();
+            badRequest!.StatusCode.Should().Be(400);
+        }
+
+        [Trait("TournamentDetailsController", "Validation")]
+        [Fact]
+        public async Task PutTournamentDetails_ReturnsBadRequest_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            var invalidDto = new UpdateTournamentDTO { Title = null! };
+            Controller.ModelState.AddModelError("Title", "Title is required.");
+
+            // Act
+            var result = await Controller.PutTournamentDetails(1, invalidDto);
+
+            // Assert
+            var badRequest = result as BadRequestObjectResult;
+            badRequest.Should().NotBeNull();
+            badRequest!.StatusCode.Should().Be(400);
+        }
+
     }
 }
 
