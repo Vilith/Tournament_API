@@ -8,16 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <PackageReference Include="Bogus" Version="35.6.3" />
-    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.17" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.17" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Domain.Contracts\Domain.Contracts.csproj" />
     <ProjectReference Include="..\Domain.Models\Domain.Models.csproj" />
+    <ProjectReference Include="..\Service.Contracts\Services.Contracts.csproj" />
+    <ProjectReference Include="..\Torunament.Services\Tournament.Services.csproj" />
     <ProjectReference Include="..\Tournament.Shared\Tournament.Shared.csproj" />
   </ItemGroup>
 

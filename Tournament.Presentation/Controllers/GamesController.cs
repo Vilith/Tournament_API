@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
+using Domain.Contracts;
+using Domain.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Tournament.Core.DTO;
-using Tournament.Core.Entities;
-using Tournament.Core.Parameters;
-using Tournament.Core.Repositories;
-using Tournament.Data.Data;
 
-namespace Tournament.Data.Controllers
+using Tournament.Shared.DTO;
+using Tournament.Shared.Parameters;
+
+namespace Tournament.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

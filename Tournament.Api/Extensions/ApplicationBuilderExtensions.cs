@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Tournament.Core.Entities;
+﻿using Domain.Models.Entities;
+using Microsoft.EntityFrameworkCore;
+
 using Tournament.Data.Data;
 
 namespace Tournament.Api.Extensions

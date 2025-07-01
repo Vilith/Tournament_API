@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tournament.Core.DTO
+namespace Tournament.Shared.DTO
 {
     public class UpdateTournamentDTO
     {

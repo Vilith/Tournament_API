@@ -1,10 +1,9 @@
+using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using Tournament.Api.Extensions;
-using Tournament.Core.Repositories;
 using Tournament.Data.Data;
 using Tournament.Data.Repositories;
+
 
 namespace Tournament.Data
 {

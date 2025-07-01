@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Domain.Models.Entities;
+using FluentAssertions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -8,10 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tournament.Core.DTO;
-using Tournament.Core.Entities;
-using Tournament.Core.Parameters;
-using Tournament.Data.Controllers;
+using Tournament.Presentation.Controllers;
+using Tournament.Shared.DTO;
+using Tournament.Shared.Parameters;
 using Tournament.Tests.TestHelpers;
 
 namespace Tournament.Tests.Controllers
@@ -105,7 +105,7 @@ namespace Tournament.Tests.Controllers
             MockMapper.Setup(m => m.Map<Game>(createDto)).Returns(gameEntity);
             MockMapper.Setup(m => m.Map<GameDTO>(gameEntity)).Returns(gameDto);
             MockUnitOfWork.Setup(u => u.GameRepository.Add(gameEntity));
-            MockUnitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
+            MockUnitOfWork.Setup(u => u.CompleteAsync()).ReturnsAsync(Task.CompletedTask);
 
             // Act
             var result = await Controller.PostGame(createDto);
@@ -129,7 +129,7 @@ namespace Tournament.Tests.Controllers
 
             MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(game);
             MockUnitOfWork.Setup(u => u.GameRepository.Remove(game));
-            MockUnitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
+            MockUnitOfWork.Setup(u => u.CompleteAsync()).ReturnsAsync(Task.CompletedTask);
 
             // Act
             var result = await Controller.DeleteGame(1);
@@ -164,7 +164,7 @@ namespace Tournament.Tests.Controllers
             MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(gameEntity);
             MockMapper.Setup(m => m.Map(updateDto, gameEntity));
             MockUnitOfWork.Setup(u => u.GameRepository.Update(gameEntity));
-            MockUnitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
+            MockUnitOfWork.Setup(u => u.CompleteAsync()).ReturnsAsync(Task.CompletedTask);
 
             // Act
             var result = await Controller.PutGame(1, updateDto);
@@ -208,7 +208,7 @@ namespace Tournament.Tests.Controllers
                 });
 
             MockUnitOfWork.Setup(u => u.CompleteAsync())
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(Task.CompletedTask);
 
             var patchDoc = new JsonPatchDocument<GameDTO>();
             patchDoc.ContractResolver = new DefaultContractResolver();

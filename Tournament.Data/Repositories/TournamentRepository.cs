@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tournament.Core.Repositories;
-using Tournament.Core.Entities;
+
 using Tournament.Data.Data;
-using Tournament.Api.Parameters;
+
+using Domain.Contracts;
+using Domain.Models.Entities;
+using Tournament.Shared.Parameters;
 
 namespace Tournament.Data.Repositories
 {

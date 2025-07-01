@@ -20,8 +20,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Domain.Contracts\Domain.Contracts.csproj" />
+    <ProjectReference Include="..\Domain.Models\Domain.Models.csproj" />
+    <ProjectReference Include="..\Service.Contracts\Services.Contracts.csproj" />
+    <ProjectReference Include="..\Torunament.Services\Tournament.Services.csproj" />
     <ProjectReference Include="..\Tournament.Api\Tournament.Api.csproj" />
-    <ProjectReference Include="..\Tournament.Core\Tournament.Core.csproj" />
+    <ProjectReference Include="..\Tournament.Data\Tournament.Data.csproj" />
+    <ProjectReference Include="..\Tournament.Presentation\Tournament.Presentation.csproj" />
+    <ProjectReference Include="..\Tournament.Shared\Tournament.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

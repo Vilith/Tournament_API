@@ -5,13 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tournament.Core.DTO
+namespace Tournament.Shared.DTO
 {
-    public class CreateGameDTO
+    public class CreateTournamentDTO
     {
         [Required]
         public string Title { get; set; }
         [Required]
-        public DateTime Time { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public List<CreateGameDTO>? Games { get; set; }
     }
 }

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tournament.Core.Entities;
-using Tournament.Api.Parameters;
 
-namespace Tournament.Core.Repositories
+using Domain.Models.Entities;
+using Tournament.Shared.Parameters;
+
+namespace Domain.Contracts
 {
+
     public interface ITournamentRepository
     {
         //Task<IEnumerable<TournamentDetails>> GetFilteredAsync(bool includeGames, DateTime? startDate, DateTime? endDate, string? title, string? gameTitle, string? sortBy);

@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Tournament.Api.Parameters
+namespace Tournament.Shared.Parameters
 {
-    public class TournamentFilterParameters
-    {        
-        public bool IncludeGames { get; set; } = false;        
-        public DateTime? StartDate { get; set; }        
+    public class GameFilterParameters
+    {
+        public DateTime? StartDate { get; set; }     
         public DateTime? EndDate { get; set; }        
         public string? Title { get; set; }        
-        public string? GameTitle { get; set; }        
         public string? SortBy { get; set; }
 
         public int PageNumber { get; set; } = 1;
