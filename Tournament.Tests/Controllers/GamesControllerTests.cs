@@ -14,10 +14,10 @@ namespace Tournament.Tests.Controllers
 {
     public class GamesControllerTests : ControllerTestBase<GamesController>
     {
-        private readonly Mock<IGameService> _mockGameService = new();
+        private readonly Mock<IGameService> MockGameService = new();
         public GamesControllerTests() : base((serviceManager) => new GamesController(serviceManager))
         {
-            MockService.Setup(sm => sm.GameService).Returns(_mockGameService.Object);
+            MockService.Setup(sm => sm.GameService).Returns(MockGameService.Object);
         }
 
         [Trait("GamesController", "Get")]
@@ -31,7 +31,7 @@ namespace Tournament.Tests.Controllers
                 new() { Id = 2, Title = "Game 2" }
             };
 
-            _mockGameService
+            MockGameService
                 .Setup(s => s.GetGamesAsync(It.IsAny<GameFilterParameters>()))
                 .ReturnsAsync(gamesDto);
             
@@ -62,7 +62,7 @@ namespace Tournament.Tests.Controllers
             //var game = new Game { Id = 1, Title = "Game 1" };
             var dto = new GameDTO { Id = 1, Title = "Game 1" };
 
-            _mockGameService
+            MockGameService
                 .Setup(s => s.GetGameAsync(1))
                 .ReturnsAsync(dto);
 
@@ -88,7 +88,7 @@ namespace Tournament.Tests.Controllers
         {
             // Arrange
             //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync((Game?)null);
-            _mockGameService
+            MockGameService
                 .Setup(s => s.GetGameAsync(1))
                 .ReturnsAsync((GameDTO?)null);
 
@@ -108,7 +108,7 @@ namespace Tournament.Tests.Controllers
             //var gameEntity = new Game { Id = 1, Title = "New Game" };
             var gameDto = new GameDTO { Id = 1, Title = "New Game" };
 
-            _mockGameService
+            MockGameService
                 .Setup(s => s.CreateGameAsync(createDto))
                 .ReturnsAsync(gameDto);
 
@@ -138,7 +138,7 @@ namespace Tournament.Tests.Controllers
             // Arrange
             var game = new Game { Id = 1, Title = "Game to delete" };
 
-            _mockGameService
+            MockGameService
                 .Setup(s => s.DeleteGameAsync(1))
                 .ReturnsAsync(true);
             //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(game);
@@ -158,7 +158,7 @@ namespace Tournament.Tests.Controllers
         {
             // Arrange
             //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync((Game?)null);
-            _mockGameService
+            MockGameService
                 .Setup(s => s.DeleteGameAsync(1))
                 .ReturnsAsync(false);
 
@@ -177,7 +177,7 @@ namespace Tournament.Tests.Controllers
             var updateDto = new UpdateGameDTO { Title = "Updated Title" };
             //var gameEntity = new Game { Id = 1, Title = "Old Title" };
 
-            _mockGameService
+            MockGameService
                 .Setup(s => s.UpdateGameAsync(1, updateDto))
                 .ReturnsAsync(true);
 
@@ -200,7 +200,7 @@ namespace Tournament.Tests.Controllers
         {
             // Arrange
             //MockUnitOfWork.Setup(u => u.GameRepository.AnyAsync(1)).ReturnsAsync(false);
-            _mockGameService
+            MockGameService
                 .Setup(s => s.UpdateGameAsync(1, It.IsAny<UpdateGameDTO>()))
                 .ReturnsAsync(false);
 
@@ -221,7 +221,7 @@ namespace Tournament.Tests.Controllers
 
             var updatedDto = new GameDTO { Id = 1, Title = "New Title" };
 
-            _mockGameService
+            MockGameService
                 .Setup(s => s.PatchGameAsync(1, patchDoc))
                 .ReturnsAsync(updatedDto);
             //var entity = new Game { Id = 1, Title = "Old Title" };
