@@ -1,8 +1,11 @@
 using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Services.Contracts;
 using Tournament.Api.Extensions;
 using Tournament.Data.Data;
 using Tournament.Data.Repositories;
+using Tournament.Presentation;
+using Tournament.Services;
 
 
 namespace Tournament.Data
@@ -22,6 +25,7 @@ namespace Tournament.Data
             {
                 opt.SerializerSettings.DateFormatString = "yyyy-MM-dd - HH:mm";
             })
+            .AddApplicationPart(typeof(AssemblyReference).Assembly)
             .AddXmlDataContractSerializerFormatters();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,6 +34,7 @@ namespace Tournament.Data
 
             builder.Services.AddAutoMapper(typeof(TournamentMappings));
             
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
             builder.Services.AddScoped<IGameRepository, GameRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

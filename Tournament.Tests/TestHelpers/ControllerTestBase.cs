@@ -1,20 +1,21 @@
 ﻿using AutoMapper;
+using Domain.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Tournament.Core.Repositories;
-using Tournament.Data.Controllers;
+using Services.Contracts;
 
 namespace Tournament.Tests.TestHelpers
-{
+{    
     public abstract class ControllerTestBase<TController> where TController : ControllerBase
     {
-        protected readonly Mock<IUnitOfWork> MockUnitOfWork = new();
-        protected readonly Mock<IMapper> MockMapper = new();
+        //protected readonly Mock<IUnitOfWork> MockUnitOfWork = new();
+        //protected readonly Mock<IMapper> MockMapper = new();
+        protected readonly Mock<IServiceManager> MockService = new();
         protected readonly TController Controller;
-        protected ControllerTestBase(Func<IUnitOfWork, IMapper, TController> controllerFactory)
+        protected ControllerTestBase(Func<IServiceManager, TController> controllerFactory)
         {
-            Controller = controllerFactory(MockUnitOfWork.Object, MockMapper.Object);
+            Controller = controllerFactory(MockService.Object);
 
             Controller.ControllerContext = new ControllerContext
             {

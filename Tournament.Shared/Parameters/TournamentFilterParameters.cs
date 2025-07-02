@@ -1,5 +1,4 @@
 ﻿
-
 namespace Tournament.Shared.Parameters
 {
     public class TournamentFilterParameters

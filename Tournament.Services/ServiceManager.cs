@@ -1,16 +1,24 @@
-﻿using Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using Domain.Contracts;
+using Services.Contracts;
 
 namespace Tournament.Services
 {
     public class ServiceManager : IServiceManager
     {
-        public ITournamentService TournamentService => throw new NotImplementedException();
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public IGameService GameService => throw new NotImplementedException();
+        private ITournamentService _tournamentService;
+        private IGameService _gameService;
+
+        public ITournamentService TournamentService => _tournamentService ??= new TournamentService(_unitOfWork, _mapper);
+        public IGameService GameService => _gameService ??= new GameService(_unitOfWork, _mapper);
+
+        public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }                
     }
 }

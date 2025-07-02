@@ -1,27 +1,21 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tournament.Api.Parameters;
-using Tournament.Core.DTO;
-using Tournament.Core.Entities;
-using Tournament.Core.Repositories;
-using Tournament.Data.Controllers;
 using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Http;
 using Tournament.Tests.TestHelpers;
+using Tournament.Presentation.Controllers;
+using Tournament.Shared.Parameters;
+using Domain.Models.Entities;
+using Tournament.Shared.DTO;
+using Services.Contracts;
 
 namespace Tournament.Tests.Controllers
 {
     public class TournamentDetailsControllerTests : ControllerTestBase<TournamentDetailsController>
     {
-        public TournamentDetailsControllerTests() : base((uow, mapper) => new TournamentDetailsController(uow, mapper))
+        private readonly Mock<ITournamentService> MockTournamentService = new();
+        public TournamentDetailsControllerTests() : base((serviceManager) => new TournamentDetailsController(serviceManager))
         {            
         }
 

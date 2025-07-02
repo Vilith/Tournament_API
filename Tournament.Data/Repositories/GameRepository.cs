@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tournament.Data.Data;
-
 using Domain.Contracts;
 using Tournament.Shared.Parameters;
 using Domain.Models.Entities;

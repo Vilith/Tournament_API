@@ -4,11 +4,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Services.Contracts;
 using Tournament.Presentation.Controllers;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
@@ -18,8 +14,10 @@ namespace Tournament.Tests.Controllers
 {
     public class GamesControllerTests : ControllerTestBase<GamesController>
     {
-        public GamesControllerTests() : base((uow, mapper) => new GamesController(uow, mapper))
+        private readonly Mock<IGameService> _mockGameService = new();
+        public GamesControllerTests() : base((serviceManager) => new GamesController(serviceManager))
         {
+            MockService.Setup(sm => sm.GameService).Returns(_mockGameService.Object);
         }
 
         [Trait("GamesController", "Get")]
@@ -27,21 +25,22 @@ namespace Tournament.Tests.Controllers
         public async Task GetGames_ReturnsOk_WithGamesList()
         {
             // Arrange
-            var games = new List<Game>
+            var gamesDto = new List<GameDTO>
             {
                 new() { Id = 1, Title = "Game 1" },
                 new() { Id = 2, Title = "Game 2" }
             };
 
-            MockUnitOfWork.Setup(u => u.GameRepository.GetFilteredAsync(It.IsAny<GameFilterParameters>()))
-                .ReturnsAsync(games);
-
-            MockMapper.Setup(m => m.Map<IEnumerable<GameDTO>>(games))
-                .Returns(new List<GameDTO>
-                {
-                    new() { Id = 1, Title = "Game 1" },
-                    new() { Id = 2, Title = "Game 2" }
-                });
+            _mockGameService
+                .Setup(s => s.GetGamesAsync(It.IsAny<GameFilterParameters>()))
+                .ReturnsAsync(gamesDto);
+            
+            //MockMapper.Setup(m => m.Map<IEnumerable<GameDTO>>(games))
+            //    .Returns(new List<GameDTO>
+            //    {
+            //        new() { Id = 1, Title = "Game 1" },
+            //        new() { Id = 2, Title = "Game 2" }
+            //    });
 
             // Act
             var result = await Controller.GetGame(new GameFilterParameters());
@@ -60,11 +59,15 @@ namespace Tournament.Tests.Controllers
         public async Task GetGame_ReturnsOk_WhenGameExists()
         {
             // Arrange
-            var game = new Game { Id = 1, Title = "Game 1" };
+            //var game = new Game { Id = 1, Title = "Game 1" };
             var dto = new GameDTO { Id = 1, Title = "Game 1" };
 
-            MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(game);
-            MockMapper.Setup(m => m.Map<GameDTO>(game)).Returns(dto);
+            _mockGameService
+                .Setup(s => s.GetGameAsync(1))
+                .ReturnsAsync(dto);
+
+            //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(game);
+            //MockMapper.Setup(m => m.Map<GameDTO>(game)).Returns(dto);
 
             // Act
             var result = await Controller.GetGame(1);
@@ -84,7 +87,10 @@ namespace Tournament.Tests.Controllers
         public async Task GetGame_ReturnsNotFound_WhenGameDoesNotExist()
         {
             // Arrange
-            MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync((Game?)null);
+            //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync((Game?)null);
+            _mockGameService
+                .Setup(s => s.GetGameAsync(1))
+                .ReturnsAsync((GameDTO?)null);
 
             // Act
             var result = await Controller.GetGame(1);
@@ -99,20 +105,25 @@ namespace Tournament.Tests.Controllers
         {
             // Arrange
             var createDto = new CreateGameDTO { Title = "New Game" };
-            var gameEntity = new Game { Id = 1, Title = "New Game" };
+            //var gameEntity = new Game { Id = 1, Title = "New Game" };
             var gameDto = new GameDTO { Id = 1, Title = "New Game" };
 
-            MockMapper.Setup(m => m.Map<Game>(createDto)).Returns(gameEntity);
-            MockMapper.Setup(m => m.Map<GameDTO>(gameEntity)).Returns(gameDto);
-            MockUnitOfWork.Setup(u => u.GameRepository.Add(gameEntity));
-            MockUnitOfWork.Setup(u => u.CompleteAsync()).ReturnsAsync(Task.CompletedTask);
+            _mockGameService
+                .Setup(s => s.CreateGameAsync(createDto))
+                .ReturnsAsync(gameDto);
+
+            //MockMapper.Setup(m => m.Map<Game>(createDto)).Returns(gameEntity);
+            //MockMapper.Setup(m => m.Map<GameDTO>(gameEntity)).Returns(gameDto);
+            //MockUnitOfWork.Setup(u => u.GameRepository.Add(gameEntity));
+            //MockUnitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
 
             // Act
             var result = await Controller.PostGame(createDto);
 
             // Assert
             var createdAtAction = result.Result as CreatedAtActionResult;
-            createdAtAction.Should().NotBeNull();
+            createdAtAction
+                .Should().NotBeNull();
             createdAtAction!.ActionName.Should().Be(nameof(GamesController.GetGame));
 
             var returnedDto = createdAtAction.Value as GameDTO;
@@ -127,9 +138,12 @@ namespace Tournament.Tests.Controllers
             // Arrange
             var game = new Game { Id = 1, Title = "Game to delete" };
 
-            MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(game);
-            MockUnitOfWork.Setup(u => u.GameRepository.Remove(game));
-            MockUnitOfWork.Setup(u => u.CompleteAsync()).ReturnsAsync(Task.CompletedTask);
+            _mockGameService
+                .Setup(s => s.DeleteGameAsync(1))
+                .ReturnsAsync(true);
+            //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(game);
+            //MockUnitOfWork.Setup(u => u.GameRepository.Remove(game));
+            //MockUnitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
 
             // Act
             var result = await Controller.DeleteGame(1);
@@ -143,7 +157,10 @@ namespace Tournament.Tests.Controllers
         public async Task DeleteGame_ReturnsNotFound_WhenGameDoesNotExist()
         {
             // Arrange
-            MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync((Game?)null);
+            //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync((Game?)null);
+            _mockGameService
+                .Setup(s => s.DeleteGameAsync(1))
+                .ReturnsAsync(false);
 
             // Act
             var result = await Controller.DeleteGame(1);
@@ -158,13 +175,17 @@ namespace Tournament.Tests.Controllers
         {
             // Arrange
             var updateDto = new UpdateGameDTO { Title = "Updated Title" };
-            var gameEntity = new Game { Id = 1, Title = "Old Title" };
+            //var gameEntity = new Game { Id = 1, Title = "Old Title" };
 
-            MockUnitOfWork.Setup(u => u.GameRepository.AnyAsync(1)).ReturnsAsync(true);
-            MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(gameEntity);
-            MockMapper.Setup(m => m.Map(updateDto, gameEntity));
-            MockUnitOfWork.Setup(u => u.GameRepository.Update(gameEntity));
-            MockUnitOfWork.Setup(u => u.CompleteAsync()).ReturnsAsync(Task.CompletedTask);
+            _mockGameService
+                .Setup(s => s.UpdateGameAsync(1, updateDto))
+                .ReturnsAsync(true);
+
+            //MockUnitOfWork.Setup(u => u.GameRepository.AnyAsync(1)).ReturnsAsync(true);
+            //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1)).ReturnsAsync(gameEntity);
+            //MockMapper.Setup(m => m.Map(updateDto, gameEntity));
+            //MockUnitOfWork.Setup(u => u.GameRepository.Update(gameEntity));
+            //MockUnitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
 
             // Act
             var result = await Controller.PutGame(1, updateDto);
@@ -178,7 +199,10 @@ namespace Tournament.Tests.Controllers
         public async Task PutGame_ReturnsNotFound_WhenGameDoesNotExist()
         {
             // Arrange
-            MockUnitOfWork.Setup(u => u.GameRepository.AnyAsync(1)).ReturnsAsync(false);
+            //MockUnitOfWork.Setup(u => u.GameRepository.AnyAsync(1)).ReturnsAsync(false);
+            _mockGameService
+                .Setup(s => s.UpdateGameAsync(1, It.IsAny<UpdateGameDTO>()))
+                .ReturnsAsync(false);
 
             // Act
             var result = await Controller.PutGame(1, new UpdateGameDTO { Title = "Test" });
@@ -192,33 +216,48 @@ namespace Tournament.Tests.Controllers
         public async Task PatchGame_ReturnsOk_WhenSuccessful()
         {
             // Arrange
-            var entity = new Game { Id = 1, Title = "Old Title" };
-            var dto = new GameDTO { Id = 1, Title = "Old Title" };
-
-            MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1))
-                .ReturnsAsync(entity);
-
-            MockMapper.Setup(m => m.Map<GameDTO>(entity))
-                .Returns(dto);
-
-            MockMapper.Setup(m => m.Map(It.IsAny<GameDTO>(), entity))
-                .Callback<GameDTO, Game>((src, dest) => 
-                { 
-                    dest.Title = src.Title;
-                });
-
-            MockUnitOfWork.Setup(u => u.CompleteAsync())
-                .ReturnsAsync(Task.CompletedTask);
-
             var patchDoc = new JsonPatchDocument<GameDTO>();
-            patchDoc.ContractResolver = new DefaultContractResolver();
             patchDoc.Replace(x => x.Title, "New Title");
+
+            var updatedDto = new GameDTO { Id = 1, Title = "New Title" };
+
+            _mockGameService
+                .Setup(s => s.PatchGameAsync(1, patchDoc))
+                .ReturnsAsync(updatedDto);
+            //var entity = new Game { Id = 1, Title = "Old Title" };
+            //var dto = new GameDTO { Id = 1, Title = "Old Title" };
+
+            //MockUnitOfWork.Setup(u => u.GameRepository.GetAsync(1))
+            //    .ReturnsAsync(entity);
+
+            //MockMapper.Setup(m => m.Map<GameDTO>(entity))
+            //    .Returns(dto);
+
+            //MockMapper.Setup(m => m.Map(It.IsAny<GameDTO>(), entity))
+            //    .Callback<GameDTO, Game>((src, dest) => 
+            //    { 
+            //        dest.Title = src.Title;
+            //    });
+
+            //MockUnitOfWork.Setup(u => u.CompleteAsync())
+            //    .Returns(Task.CompletedTask);
+
+            //var patchDoc = new JsonPatchDocument<GameDTO>();
+            //patchDoc.ContractResolver = new DefaultContractResolver();
+            //patchDoc.Replace(x => x.Title, "New Title");
 
             // Act
             var result = await Controller.PatchGame(1, patchDoc);
 
             // Assert
-            result.Result.Should().BeOfType<OkObjectResult>();
+            //result.Result.Should().BeOfType<OkObjectResult>();
+            //var okResult = result.Result as OkObjectResult;
+            //okResult.Should().NotBeNull();
+
+            //var returnedDto = okResult!.Value as GameDTO;
+            //returnedDto.Should().NotBeNull();
+            //returnedDto!.Title.Should().Be("New Title");
+
             var okResult = result.Result as OkObjectResult;
             okResult.Should().NotBeNull();
 
