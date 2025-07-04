@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tournament.Shared;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
 
@@ -52,10 +53,36 @@ namespace Tournament.Services
             return _mapper.Map<GameDTO>(game);
         }
 
-        public async Task<IEnumerable<GameDTO>> GetGamesAsync(GameFilterParameters parameters)
+
+        public async Task<(IEnumerable<GameDTO> Games, PaginationData MetaData)> GetGamesAsync(GameFilterParameters parameters)
         {
-            return _mapper.Map<IEnumerable<GameDTO>>(await _unitOfWork.GameRepository.GetFilteredAsync(parameters));
+            var filteredGames = await _unitOfWork.GameRepository.GetFilteredAsync(parameters);
+
+            int totalItems = filteredGames.Count();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)parameters.PageSize);
+
+            var pagedGames = filteredGames
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToList();
+
+            var dto = _mapper.Map<IEnumerable<GameDTO>>(pagedGames);
+
+            var metaData = new PaginationData
+            {
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                PageSize = parameters.PageSize,
+                CurrentPage = parameters.PageNumber
+            };
+
+            return (dto, metaData);
         }
+
+        //public async Task<IEnumerable<GameDTO>> GetGamesAsync(GameFilterParameters parameters)
+        //{
+        //    return _mapper.Map<IEnumerable<GameDTO>>(await _unitOfWork.GameRepository.GetFilteredAsync(parameters));
+        //}
 
         public async Task<IEnumerable<GameDTO>> GetGamesByTitleAsync(string title)
         {
@@ -96,6 +123,6 @@ namespace Tournament.Services
             await _unitOfWork.CompleteAsync();
 
             return true;
-        }
+        }                
     }
 }

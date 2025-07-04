@@ -20,9 +20,31 @@ namespace Tournament.Presentation.Controllers
         public async Task<ActionResult<IEnumerable<TournamentDTO>>> GetTournamentDetails(
             [FromQuery] TournamentFilterParameters parameters)
         {
-            var tournaments = await _serviceManager.TournamentService.GetTournamentDetailsAsync(parameters); 
+            var (tournaments, metaData) = await _serviceManager.TournamentService.GetTournamentDetailsAsync(parameters);
             
-            return Ok(tournaments);            
+            var response = new
+            {
+                items = tournaments,
+                metaData = new
+                { 
+                    totalPages = metaData.TotalPages,
+                    pageSize = metaData.PageSize,
+                    currentPage = metaData.CurrentPage,
+                    totalItems = metaData.TotalItems
+                }
+            };
+
+            return Ok(response);
+
+            //Response.Headers["X-Pagination-TotalItems"] = metaData.TotalItems.ToString();
+            //Response.Headers["X-Pagination-TotalPages"] = metaData.TotalPages.ToString();
+            //Response.Headers["X-Pagination-PageSize"] = metaData.PageSize.ToString();
+            //Response.Headers["X-Pagination-CurrentPage"] = metaData.CurrentPage.ToString();
+
+            //return Ok(tournaments);
+            //var tournaments = await _serviceManager.TournamentService.GetTournamentDetailsAsync(parameters); 
+
+            //return Ok(tournaments);            
         }               
 
         // GET: api/TournamentDetails/5

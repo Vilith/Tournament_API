@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tournament.Shared;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
 
@@ -44,12 +45,37 @@ namespace Tournament.Services
             await _unitOfWork.CompleteAsync();
 
             return true;
-        }               
-
-        public async Task<IEnumerable<TournamentDTO>> GetTournamentDetailsAsync(TournamentFilterParameters parameters)
-        {
-            return _mapper.Map<IEnumerable<TournamentDTO>>(await _unitOfWork.TournamentRepository.GetFilteredAsync(parameters));
         }
+
+        public async Task<(IEnumerable<TournamentDTO> Tournaments, PaginationData MetaData)> GetTournamentDetailsAsync(TournamentFilterParameters parameters)
+        {
+            var filteredTournaments = await _unitOfWork.TournamentRepository.GetFilteredAsync(parameters);
+
+            int totalItems = filteredTournaments.Count();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)parameters.PageSize);
+
+            var pagedTournaments = filteredTournaments
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToList();
+
+            var dto = _mapper.Map<IEnumerable<TournamentDTO>>(pagedTournaments);
+
+            var metaData = new PaginationData
+            {
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                PageSize = parameters.PageSize,
+                CurrentPage = parameters.PageNumber
+            };
+
+            return (dto, metaData);
+        }
+
+        //public async Task<IEnumerable<TournamentDTO>> GetTournamentDetailsAsync(TournamentFilterParameters parameters)
+        //{
+            //return _mapper.Map<IEnumerable<TournamentDTO>>(await _unitOfWork.TournamentRepository.GetFilteredAsync(parameters));
+        //}
 
         public async Task<TournamentDTO?> GetTournamentDetailsAsync(int id)
         {            
@@ -93,5 +119,6 @@ namespace Tournament.Services
 
             return true;
         }
+                
     }
 }

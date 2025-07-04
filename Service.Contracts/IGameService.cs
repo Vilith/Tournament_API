@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tournament.Shared;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
 
@@ -11,7 +12,7 @@ namespace Services.Contracts
 {
     public interface IGameService
     {
-        Task<IEnumerable<GameDTO>> GetGamesAsync(GameFilterParameters parameters);
+        Task<(IEnumerable<GameDTO> Games, PaginationData MetaData)> GetGamesAsync(GameFilterParameters parameters);
         Task<IEnumerable<GameDTO>> GetGamesByTitleAsync(string title);
         Task<GameDTO?> GetGameAsync(int id);
         Task<GameDTO> CreateGameAsync(CreateGameDTO dto);

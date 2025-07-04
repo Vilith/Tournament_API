@@ -17,14 +17,36 @@ namespace Tournament.Presentation.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame(
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames(
             [FromQuery] GameFilterParameters parameters)
         {
-            var games = await _serviceManager.GameService.GetGamesAsync(parameters);
+            var (games, metaData) = await _serviceManager.GameService.GetGamesAsync(parameters);
+
+            var response = new
+            {
+                items = games,
+                metaData = new
+                {
+                    totalPages = metaData.TotalPages,
+                    pageSize = metaData.PageSize,
+                    currentPage = metaData.CurrentPage,
+                    totalItems = metaData.TotalItems
+                }
+            };
+
+                return Ok(response);
+            }
+            //Response.Headers["X-Pagination-TotalItems"] = metaData.TotalItems.ToString();
+            //Response.Headers["X-Pagination-TotalPages"] = metaData.TotalPages.ToString();
+            //Response.Headers["X-Pagination-PageSize"] = metaData.PageSize.ToString();
+            //Response.Headers["X-Pagination-CurrentPage"] = metaData.CurrentPage.ToString();
+
+            //return Ok(games);
+            //var games = await _serviceManager.GameService.GetGamesAsync(parameters);
             //var games = await _unitOfWork.GameRepository.GetFilteredAsync(parameters);
             //var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
-            return Ok(games);
-        }
+            //return Ok(games);
+        
 
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<GameDTO>>> GetGamesByTitle(string title)
