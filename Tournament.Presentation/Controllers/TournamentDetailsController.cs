@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
 using Domain.Models.Entities;
-using Domain.Contracts;
 using Services.Contracts;
 
 

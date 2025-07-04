@@ -11,8 +11,8 @@ namespace Tournament.Shared.Parameters
         public int PageNumber { get; set; } = 1;
 
         // Validation for PageSize to not exceed a maximum value
-        private int _pageSize = 10;
-        private readonly int maxPageSize = 50;
+        private int _pageSize = 20;
+        private readonly int maxPageSize = 100;
         public int PageSize
         {
             get => _pageSize;

@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Domain.Contracts;
-using Domain.Models.Entities;
+﻿using Domain.Models.Entities;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
