@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Tournament.Shared;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
+using Tournament.Shared.Requests;
 
 namespace Tournament.Services
 {
@@ -54,29 +55,39 @@ namespace Tournament.Services
         }
 
 
-        public async Task<(IEnumerable<GameDTO> Games, PaginationData MetaData)> GetGamesAsync(GameFilterParameters parameters)
+        public async Task<(PagedList<GameDTO> Games, MetaData MetaData)> GetGamesAsync(GameFilterParameters parameters)
         {
             var filteredGames = await _unitOfWork.GameRepository.GetFilteredAsync(parameters);
 
-            int totalItems = filteredGames.Count();
-            int totalPages = (int)Math.Ceiling(totalItems / (double)parameters.PageSize);
+            var mappedDtops = _mapper.Map<IEnumerable<GameDTO>>(filteredGames);
 
-            var pagedGames = filteredGames
-                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-                .Take(parameters.PageSize)
-                .ToList();
+            var pagedList = PagedList<GameDTO>.ToPagedList(mappedDtops.AsQueryable(), parameters.PageNumber, parameters.PageSize);
 
-            var dto = _mapper.Map<IEnumerable<GameDTO>>(pagedGames);
+            return (pagedList, pagedList.MetaData);
 
-            var metaData = new PaginationData
-            {
-                TotalItems = totalItems,
-                TotalPages = totalPages,
-                PageSize = parameters.PageSize,
-                CurrentPage = parameters.PageNumber
-            };
+            //var filteredGames = await _unitOfWork.GameRepository.GetFilteredAsync(parameters);
 
-            return (dto, metaData);
+            //int totalItems = filteredGames.Count();
+            //int totalPages = (int)Math.Ceiling(totalItems / (double)parameters.PageSize);
+
+            //var pagedGames = filteredGames
+            //    .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            //    .Take(parameters.PageSize)
+            //    .ToList();
+
+            ////var dto = _mapper.Map<IEnumerable<GameDTO>>(pagedGames);
+            //var dto = _mapper.Map<List<GameDTO>>(pagedGames);
+            //var pagedList = new PagedList<GameDTO>(dto, totalItems, parameters.PageNumber, parameters.PageSize);
+
+            //var metaData = new MetaData
+            //{
+            //    TotalItems = totalItems,
+            //    TotalPages = totalPages,
+            //    PageSize = parameters.PageSize,
+            //    CurrentPage = parameters.PageNumber
+            //};
+
+            //return (pagedList, metaData);
         }
 
         //public async Task<IEnumerable<GameDTO>> GetGamesAsync(GameFilterParameters parameters)

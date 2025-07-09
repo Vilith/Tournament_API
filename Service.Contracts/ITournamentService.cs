@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Tournament.Shared;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
+using Tournament.Shared.Requests;
 
 namespace Services.Contracts
 {
     public interface ITournamentService
     {        
-        Task<(IEnumerable<TournamentDTO> Tournaments, PaginationData MetaData)> GetTournamentDetailsAsync(TournamentFilterParameters parameters);
+        Task<(PagedList<TournamentDTO> Tournaments, MetaData MetaData)> GetTournamentDetailsAsync(TournamentFilterParameters parameters);
         Task<TournamentDTO?> GetTournamentDetailsAsync(int id);
         Task<TournamentDTO> CreateTournamentDetailsAsync(CreateTournamentDTO dto);
         Task<TournamentDTO?> PatchTournamentDetailsAsync(int id, JsonPatchDocument<TournamentDTO> patchDocument);

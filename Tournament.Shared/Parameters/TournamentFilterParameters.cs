@@ -1,7 +1,9 @@
 ﻿
+using Tournament.Shared.Requests;
+
 namespace Tournament.Shared.Parameters
 {
-    public class TournamentFilterParameters
+    public class TournamentFilterParameters : RequestParameters
     {        
         public bool IncludeGames { get; set; } = false;        
         public DateTime? StartDate { get; set; }        
@@ -9,17 +11,6 @@ namespace Tournament.Shared.Parameters
         public string? Title { get; set; }        
         public string? GameTitle { get; set; }        
         public string? SortBy { get; set; }
-
-        public int PageNumber { get; set; } = 1;
-
-        // Validation for PageSize to not exceed a maximum value
-        private int _pageSize = 20;
-        private readonly int maxPageSize = 100;
-        public int PageSize
-        {
-            get => _pageSize;
-            set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
-
-        }
+        
     }
 }

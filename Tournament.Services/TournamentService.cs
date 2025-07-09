@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Tournament.Shared;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
+using Tournament.Shared.Requests;
 
 namespace Tournament.Services
 {
@@ -47,7 +48,7 @@ namespace Tournament.Services
             return true;
         }
 
-        public async Task<(IEnumerable<TournamentDTO> Tournaments, PaginationData MetaData)> GetTournamentDetailsAsync(TournamentFilterParameters parameters)
+        public async Task<(PagedList<TournamentDTO> Tournaments, MetaData MetaData)> GetTournamentDetailsAsync(TournamentFilterParameters parameters)
         {
             var filteredTournaments = await _unitOfWork.TournamentRepository.GetFilteredAsync(parameters);
 
@@ -59,9 +60,11 @@ namespace Tournament.Services
                 .Take(parameters.PageSize)
                 .ToList();
 
-            var dto = _mapper.Map<IEnumerable<TournamentDTO>>(pagedTournaments);
+            //var dto = _mapper.Map<IEnumerable<TournamentDTO>>(pagedTournaments);
+            var dto = _mapper.Map<List<TournamentDTO>>(pagedTournaments);
+            var pagedList = new PagedList<TournamentDTO>(dto, totalItems, parameters.PageNumber, parameters.PageSize);
 
-            var metaData = new PaginationData
+            var metaData = new MetaData
             {
                 TotalItems = totalItems,
                 TotalPages = totalPages,
@@ -69,7 +72,7 @@ namespace Tournament.Services
                 CurrentPage = parameters.PageNumber
             };
 
-            return (dto, metaData);
+            return (pagedList, metaData);
         }
 
         //public async Task<IEnumerable<TournamentDTO>> GetTournamentDetailsAsync(TournamentFilterParameters parameters)
