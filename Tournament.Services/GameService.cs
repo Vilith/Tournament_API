@@ -30,10 +30,34 @@ namespace Tournament.Services
         public async Task<GameDTO> CreateGameAsync(CreateGameDTO dto)
         {
             var entity = _mapper.Map<Game>(dto);
+
+            if (!await _unitOfWork.TournamentRepository.AnyAsync(entity.TournamentId))
+            {
+                throw new InvalidOperationException($"Tournament with id: {entity.TournamentId} not found");
+            }
+
+            var gameCount = await _unitOfWork.GameRepository.GetAllAsync();
+            if (gameCount.Count(g => g.TournamentId == entity.TournamentId) >= 10)
+            {
+                throw new InvalidOperationException("Max games");
+            }
+
+            if (gameCount.Any(g => g.Title == entity.Title))
+            {
+                throw new InvalidOperationException("Game already exists in the same tournament");
+            }
+
+
             _unitOfWork.GameRepository.Add(entity);
             await _unitOfWork.CompleteAsync();
 
             return _mapper.Map<GameDTO>(entity);
+
+            //var entity = _mapper.Map<Game>(dto);
+            //_unitOfWork.GameRepository.Add(entity);
+            //await _unitOfWork.CompleteAsync();
+
+            //return _mapper.Map<GameDTO>(entity);
         }
 
         public async Task<bool> DeleteGameAsync(int id)

@@ -27,8 +27,8 @@ namespace Tournament.Tests.Controllers
             var parameters = new TournamentFilterParameters();
             var dtoList = new List<TournamentDTO> { new TournamentDTO { Id = 1, Title = "Test" } };
 
-            MockTournamentService.Setup(s => s.GetTournamentDetailsAsync(parameters))
-                .ReturnsAsync(dtoList);
+            //MockTournamentService.Setup(s => s.GetTournamentDetailsAsync(parameters))
+                //.ReturnsAsync(dtoList);
 
             var result = await Controller.GetTournamentDetails(parameters);
 

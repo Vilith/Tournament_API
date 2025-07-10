@@ -11,8 +11,6 @@ namespace Tournament.Presentation.Controllers
     [ApiController]
     public class GamesController(IServiceManager serviceManager) : ControllerBase
     {
-        //private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        //private readonly IMapper _mapper = mapper;
         private readonly IServiceManager _serviceManager = serviceManager;
 
         // GET: api/Games
@@ -34,35 +32,17 @@ namespace Tournament.Presentation.Controllers
                 }
             };
 
-                return Ok(response);
-            }
-            //Response.Headers["X-Pagination-TotalItems"] = metaData.TotalItems.ToString();
-            //Response.Headers["X-Pagination-TotalPages"] = metaData.TotalPages.ToString();
-            //Response.Headers["X-Pagination-PageSize"] = metaData.PageSize.ToString();
-            //Response.Headers["X-Pagination-CurrentPage"] = metaData.CurrentPage.ToString();
-
-            //return Ok(games);
-            //var games = await _serviceManager.GameService.GetGamesAsync(parameters);
-            //var games = await _unitOfWork.GameRepository.GetFilteredAsync(parameters);
-            //var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
-            //return Ok(games);
-        
+            return Ok(response);
+        }
 
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<GameDTO>>> GetGamesByTitle(string title)
         {
             var games = await _serviceManager.GameService.GetGamesByTitleAsync(title);
-            if (!games.Any())            
+            if (!games.Any())
                 return NotFound($"No games with title: {title} found!");
 
             return Ok(games);
-
-            //var games = await _unitOfWork.GameRepository.GetByTitleAsync(title);
-            //if (!games.Any())            
-            //return NotFound($"No games with title: {title} found!");
-
-            //var dto = _mapper.Map<IEnumerable<GameDTO>>(games);
-            //return Ok(dto);
         }
 
         // GET: api/Games/5
@@ -70,18 +50,10 @@ namespace Tournament.Presentation.Controllers
         public async Task<ActionResult<Game>> GetGame(int id)
         {
             var game = await _serviceManager.GameService.GetGameAsync(id);
-            if (game == null)            
+            if (game == null)
                 return NotFound($"Game with ID {id} not found.");
 
             return Ok(game);
-
-            //var dto = await _unitOfWork.GameRepository.GetAsync(id);
-
-            //if (dto == null)            
-            //    return NotFound($"Game with ID {id} not found.");
-
-
-            //return Ok(_mapper.Map<GameDTO>(dto));
         }
 
         // PUT: api/Games/5
@@ -97,26 +69,6 @@ namespace Tournament.Presentation.Controllers
                 return NotFound($"Game with ID {id} not found or update failed.");
 
             return NoContent();
-
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
-            //if (!await _unitOfWork.GameRepository.AnyAsync(id))            
-            //    return NotFound($"Game with ID {id} not found.");
-
-            //var entity = await _unitOfWork.GameRepository.GetAsync(id);
-            //if (entity == null)            
-            //    return NotFound($"Game with ID {id} not found.");
-
-            //entity.Title = dto.Title;
-            //entity.Time = dto.Time;
-
-            //_unitOfWork.GameRepository.Update(entity);
-            //await _unitOfWork.CompleteAsync();
-
-            //return NoContent();
         }
 
         // POST: api/Games
@@ -131,15 +83,6 @@ namespace Tournament.Presentation.Controllers
 
             var created = await _serviceManager.GameService.CreateGameAsync(dto);
             return CreatedAtAction(nameof(GetGame), new { id = created.Id }, created);
-
-            //// Validate the DTO before mapping
-            //var entity = _mapper.Map<Game>(dto);
-            //_unitOfWork.GameRepository.Add(entity);
-            //await _unitOfWork.CompleteAsync();
-
-            //// Mapping the entity back to DTO for the response
-            //var createdDto = _mapper.Map<GameDTO>(entity);
-            //return CreatedAtAction(nameof(GetGame), new { id = entity.Id }, createdDto);
         }
 
         // DELETE: api/Games/5
@@ -151,18 +94,7 @@ namespace Tournament.Presentation.Controllers
                 return NotFound($"Game with ID {id} not found.");
 
             return NoContent();
-
-            //var dto = await _unitOfWork.GameRepository.GetAsync(id);
-            //if (dto == null)
-            //{
-            //    return NotFound($"Couldn't delete. Game with ID {id} not found.");
-            //}
-
-            //_unitOfWork.GameRepository.Remove(dto);
-            //await _unitOfWork.CompleteAsync();
-
-            //return NoContent();
-        }        
+        }
 
         [HttpPatch("{id:int}")]
         public async Task<ActionResult<GameDTO>> PatchGame(int id, JsonPatchDocument<GameDTO> patchDocument)
@@ -173,30 +105,11 @@ namespace Tournament.Presentation.Controllers
             var patchedGame = await _serviceManager.GameService.PatchGameAsync(id, patchDocument);
             if (patchedGame == null)
                 return NotFound($"Game with ID {id} not found.");
-            
+
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
             return Ok(patchedGame);
-
-            //if (patchDocument == null)
-            //    return BadRequest("Patch document cannot be null.");
-
-            //var existingGame = await _unitOfWork.GameRepository.GetAsync(id);
-            //if (existingGame == null)
-            //    return NotFound($"Game with ID {id} not found.");
-
-            //var dto = _mapper.Map<GameDTO>(existingGame);
-            //patchDocument.ApplyTo(dto, ModelState);
-            //TryValidateModel(dto);
-
-            //if (!ModelState.IsValid)
-            //    return UnprocessableEntity(ModelState);
-
-            //_mapper.Map(dto, existingGame);            
-            //await _unitOfWork.CompleteAsync();
-
-            //return Ok(dto);
         }
     }
 }

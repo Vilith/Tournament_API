@@ -12,6 +12,9 @@ namespace Tournament.Shared.DTO
         [Required]
         public string Title { get; set; }
         [Required]
+        public int TournamentId { get; set; }
+        [Required]
         public DateTime Time { get; set; }
+        
     }
 }
