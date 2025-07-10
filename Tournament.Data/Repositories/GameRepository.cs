@@ -3,6 +3,7 @@ using Tournament.Data.Data;
 using Domain.Contracts;
 using Tournament.Shared.Parameters;
 using Domain.Models.Entities;
+using System.Linq.Expressions;
 
 namespace Tournament.Data.Repositories
 {
@@ -55,12 +56,17 @@ namespace Tournament.Data.Repositories
         public async Task<Game?> GetAsync(int id) => await _context.Games
             .FirstOrDefaultAsync(g => g.Id == id);
 
-        public async Task<bool> AnyAsync(int id) => await _context.Games.AnyAsync(g => g.Id == id);       
+        //public async Task<bool> AnyAsync(int id) => await _context.Games.AnyAsync(g => g.Id == id);
+        public async Task<bool> AnyAsync(Expression<Func<Game, bool>> predicate) => await _context.Games.AnyAsync(predicate);
+
+        public async Task<int> CountAsync(Expression<Func<Game, bool>> predicate) => await _context.Games.CountAsync(predicate);        
 
         public void Add(Game game) => _context.Games.Add(game);
         
         public void Update(Game game) => _context.Games.Update(game);
     
-        public void Remove(Game game) => _context.Games.Remove(game);      
+        public void Remove(Game game) => _context.Games.Remove(game);
+
+       
     }
 }

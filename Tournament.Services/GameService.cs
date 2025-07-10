@@ -36,16 +36,36 @@ namespace Tournament.Services
                 throw new InvalidOperationException($"Tournament with id: {entity.TournamentId} not found");
             }
 
-            var gameCount = await _unitOfWork.GameRepository.GetAllAsync();
-            if (gameCount.Count(g => g.TournamentId == entity.TournamentId) >= 10)
+            var tournamentGameCount = await _unitOfWork.GameRepository
+                .CountAsync(g => g.TournamentId == entity.Id);
+
+            if (tournamentGameCount >= 10)
             {
-                throw new InvalidOperationException("Max games");
+                throw new InvalidOperationException("A Tournament can not have more than 10 games");
             }
 
-            if (gameCount.Any(g => g.Title == entity.Title))
+            if (await _unitOfWork.GameRepository.AnyAsync(g => g.Title == entity.Title && g.TournamentId == entity.TournamentId))
             {
-                throw new InvalidOperationException("Game already exists in the same tournament");
+                throw new InvalidOperationException("A Game with the same title already exists in this tournament");
             }
+
+            //var gameExists = await _unitOfWork.GameRepository.AnyAsync(g => g.Title == entity.Title && g.TournamentId == entity.TournamentId);
+
+            //if (gameExists)
+            //{
+            //    throw new InvalidOperationException("A Game with the same title already exists in this tournament");
+            //}
+
+            //var gameCount = await _unitOfWork.GameRepository.GetAllAsync();
+            //if (gameCount.Count(g => g.TournamentId == entity.TournamentId) >= 10)
+            //{
+                //throw new InvalidOperationException("Max games");
+            //}
+
+            //if (gameCount.Any(g => g.Title == entity.Title))
+            //{
+                //throw new InvalidOperationException("Game already exists in the same tournament");
+            //}
 
 
             _unitOfWork.GameRepository.Add(entity);
@@ -144,7 +164,7 @@ namespace Tournament.Services
 
         public async Task<bool> UpdateGameAsync(int id, UpdateGameDTO dto)
         {
-            if (!await _unitOfWork.GameRepository.AnyAsync(id))
+            if (!await _unitOfWork.GameRepository.AnyAsync(g => g.Id == id))
                 return false;
 
             var entity = await _unitOfWork.GameRepository.GetAsync(id);
