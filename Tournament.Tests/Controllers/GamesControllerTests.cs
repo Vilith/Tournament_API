@@ -1,11 +1,15 @@
-﻿using Domain.Models.Entities;
+﻿using AutoMapper;
+using Domain.Contracts;
+using Domain.Models.Entities;
 using FluentAssertions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json.Serialization;
 using Services.Contracts;
+using System.Linq.Expressions;
 using Tournament.Presentation.Controllers;
+using Tournament.Services;
 using Tournament.Shared.DTO;
 using Tournament.Shared.Parameters;
 using Tournament.Tests.TestHelpers;
@@ -299,7 +303,6 @@ namespace Tournament.Tests.Controllers
             badRequest.Should().NotBeNull();
             badRequest!.StatusCode.Should().Be(400);
         }
-
     }
 }
 

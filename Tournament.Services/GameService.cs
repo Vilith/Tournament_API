@@ -37,7 +37,7 @@ namespace Tournament.Services
             }
 
             var tournamentGameCount = await _unitOfWork.GameRepository
-                .CountAsync(g => g.TournamentId == entity.Id);
+                .CountAsync(g => g.TournamentId == entity.TournamentId);
 
             if (tournamentGameCount >= 10)
             {
@@ -49,35 +49,10 @@ namespace Tournament.Services
                 throw new InvalidOperationException("A Game with the same title already exists in this tournament");
             }
 
-            //var gameExists = await _unitOfWork.GameRepository.AnyAsync(g => g.Title == entity.Title && g.TournamentId == entity.TournamentId);
-
-            //if (gameExists)
-            //{
-            //    throw new InvalidOperationException("A Game with the same title already exists in this tournament");
-            //}
-
-            //var gameCount = await _unitOfWork.GameRepository.GetAllAsync();
-            //if (gameCount.Count(g => g.TournamentId == entity.TournamentId) >= 10)
-            //{
-                //throw new InvalidOperationException("Max games");
-            //}
-
-            //if (gameCount.Any(g => g.Title == entity.Title))
-            //{
-                //throw new InvalidOperationException("Game already exists in the same tournament");
-            //}
-
-
             _unitOfWork.GameRepository.Add(entity);
             await _unitOfWork.CompleteAsync();
 
-            return _mapper.Map<GameDTO>(entity);
-
-            //var entity = _mapper.Map<Game>(dto);
-            //_unitOfWork.GameRepository.Add(entity);
-            //await _unitOfWork.CompleteAsync();
-
-            //return _mapper.Map<GameDTO>(entity);
+            return _mapper.Map<GameDTO>(entity);            
         }
 
         public async Task<bool> DeleteGameAsync(int id)
