@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
 using Domain.Models.Entities;
+using Domain.Models.Exceptions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
@@ -33,7 +34,8 @@ namespace Tournament.Services
 
             if (!await _unitOfWork.TournamentRepository.AnyAsync(entity.TournamentId))
             {
-                throw new InvalidOperationException($"Tournament with id: {entity.TournamentId} not found");
+                throw new NotFoundException($"Tournament with id: {entity.TournamentId} not found");
+                //throw new InvalidOperationException($"Tournament with id: {entity.TournamentId} not found");
             }
 
             var tournamentGameCount = await _unitOfWork.GameRepository
@@ -41,7 +43,8 @@ namespace Tournament.Services
 
             if (tournamentGameCount >= 10)
             {
-                throw new InvalidOperationException("A Tournament can not have more than 10 games");
+                throw new BusinessRuleViolationException("A Tournament can not have more than 10 games");
+                //throw new InvalidOperationException("A Tournament can not have more than 10 games");
             }
 
             if (await _unitOfWork.GameRepository.AnyAsync(g => g.Title == entity.Title && g.TournamentId == entity.TournamentId))

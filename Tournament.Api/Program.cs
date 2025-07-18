@@ -23,7 +23,7 @@ namespace Tournament.Data
             builder.Services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
             .AddNewtonsoftJson(opt =>
             {
-                opt.SerializerSettings.DateFormatString = "yyyy-MM-dd - HH:mm";
+                opt.SerializerSettings.DateFormatString = "yyyy-MM-dd - HH:mm";                
             })
             .AddApplicationPart(typeof(AssemblyReference).Assembly)
             .AddXmlDataContractSerializerFormatters();
@@ -41,6 +41,10 @@ namespace Tournament.Data
 
 
             var app = builder.Build();
+            
+
+            app.ConfigureExceptionMiddleware();
+
 
             using (var scope = app.Services.CreateScope())
             {
@@ -55,6 +59,8 @@ namespace Tournament.Data
                 app.UseSwaggerUI();
                 await app.SeedDataAsync();
             }
+
+            
 
 
             app.UseHttpsRedirection();

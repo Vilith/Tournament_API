@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Entities;
+using Domain.Models.Responses;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
@@ -20,7 +21,7 @@ namespace Tournament.Presentation.Controllers
         {
             var (games, metaData) = await _serviceManager.GameService.GetGamesAsync(parameters);
 
-            var response = new
+            var pagedResponse = new
             {
                 items = games,
                 metaData = new
@@ -32,6 +33,11 @@ namespace Tournament.Presentation.Controllers
                 }
             };
 
+            var response = new ApiBaseResponse<object>(
+                data: pagedResponse,
+                message: "Games fetched successfully"
+                );
+
             return Ok(response);
         }
 
@@ -40,9 +46,27 @@ namespace Tournament.Presentation.Controllers
         {
             var games = await _serviceManager.GameService.GetGamesByTitleAsync(title);
             if (!games.Any())
-                return NotFound($"No games with title: {title} found!");
+            {
+                var errorResponse = new ApiBaseResponse<string>(
+                    error: $"No games with title: {title} found."
+                    );
 
-            return Ok(games);
+                return NotFound(errorResponse);
+            }
+
+            var response = new ApiBaseResponse<IEnumerable<GameDTO>>(
+                data: games,
+                message: $"Games with title '{title}' fetched successfully"
+                );
+
+            return Ok(response);
+
+            //var games = await _serviceManager.GameService.GetGamesByTitleAsync(title);
+            //if (!games.Any())
+            //return NotFound($"No games with title: {title} found!");
+
+            //return Ok(games);                      
+
         }
 
         // GET: api/Games/5
@@ -51,9 +75,25 @@ namespace Tournament.Presentation.Controllers
         {
             var game = await _serviceManager.GameService.GetGameAsync(id);
             if (game == null)
-                return NotFound($"Game with ID {id} not found.");
+            {
+                var errorResponse = new ApiBaseResponse<GameDTO>(
+                    error: $"Game with ID {id} not found."
+                    );
 
-            return Ok(game);
+                return NotFound(errorResponse);
+            }
+
+            var successResponse = new ApiBaseResponse<GameDTO>(
+                data: game, 
+                message: "Game fetched successfully"
+                );
+
+            return Ok(successResponse); // Or should i perhaps return NoContent()?
+
+            //if (game == null)
+            //return NotFound($"Game with ID {id} not found.");
+
+            //return Ok(game);
         }
 
         // PUT: api/Games/5
@@ -62,13 +102,39 @@ namespace Tournament.Presentation.Controllers
         public async Task<IActionResult> PutGame(int id, UpdateGameDTO dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                var errorResponse = new ApiBaseResponse<string>(
+                    error: "Invalid model state."
+                    );
+
+                return BadRequest(errorResponse);
+            }
 
             var updateResult = await _serviceManager.GameService.UpdateGameAsync(id, dto);
             if (!updateResult)
-                return NotFound($"Game with ID {id} not found or update failed.");
+            {
+                var errorResponse = new ApiBaseResponse<string>(
+                    error: $"Game with ID {id} not found or update failed."
+                    );
 
-            return NoContent();
+                return NotFound(errorResponse);
+            }
+
+            var successResponse = new ApiBaseResponse<string>(
+                data: null,
+                message: $"Game with ID {id} updated successfully."
+                );
+
+            return Ok(successResponse);
+
+            //if (!ModelState.IsValid)
+            //return BadRequest(ModelState);
+
+            //var updateResult = await _serviceManager.GameService.UpdateGameAsync(id, dto);
+            //if (!updateResult)
+            //return NotFound($"Game with ID {id} not found or update failed.");
+
+            //return NoContent();
         }
 
         // POST: api/Games
@@ -78,11 +144,28 @@ namespace Tournament.Presentation.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                var response = new ApiBaseResponse<GameDTO>(errors, "Validation failed");
+
+                return BadRequest(response);
             }
 
-            var created = await _serviceManager.GameService.CreateGameAsync(dto);
-            return CreatedAtAction(nameof(GetGame), new { id = created.Id }, created);
+            var createdGame = await _serviceManager.GameService.CreateGameAsync(dto);
+            var successResponse = new ApiBaseResponse<GameDTO>(createdGame, "Game created successfully");
+
+            return Ok(successResponse);
+
+            //if (!ModelState.IsValid)
+            //{
+            //return BadRequest(ModelState);
+            //}
+
+            //var created = await _serviceManager.GameService.CreateGameAsync(dto);
+            //return CreatedAtAction(nameof(GetGame), new { id = created.Id }, created);
         }
 
         // DELETE: api/Games/5
@@ -91,25 +174,76 @@ namespace Tournament.Presentation.Controllers
         {
             var deleted = await _serviceManager.GameService.DeleteGameAsync(id);
             if (!deleted)
-                return NotFound($"Game with ID {id} not found.");
+            {
+                var errorResponse = new ApiBaseResponse<string>(
+                    error: $"Game with ID {id} not found."
+                    );
 
-            return NoContent();
+                return NotFound(errorResponse);
+            }
+
+            var successResponse = new ApiBaseResponse<string>(
+                data: null,
+                message: $"Game with ID {id} deleted successfully."
+                );
+
+            return Ok(successResponse);
+            //var deleted = await _serviceManager.GameService.DeleteGameAsync(id);
+            //if (!deleted)
+            //return NotFound($"Game with ID {id} not found.");
+
+            //return NoContent();
         }
 
         [HttpPatch("{id:int}")]
         public async Task<ActionResult<GameDTO>> PatchGame(int id, JsonPatchDocument<GameDTO> patchDocument)
         {
             if (patchDocument == null)
-                return BadRequest("Patch document cannot be null.");
+            {
+                var errorResponse = new ApiBaseResponse<string>(
+                    error: "Patch document cannot be null."
+                    );
+
+                return BadRequest(errorResponse);
+            }
 
             var patchedGame = await _serviceManager.GameService.PatchGameAsync(id, patchDocument);
             if (patchedGame == null)
-                return NotFound($"Game with ID {id} not found.");
+            {
+                var errorResponse = new ApiBaseResponse<string>(
+                    error: $"Game with ID {id} not found."
+                    );
+
+                return NotFound(errorResponse);
+            }
 
             if (!ModelState.IsValid)
-                return UnprocessableEntity(ModelState);
+            {
+                var errorResponse = new ApiBaseResponse<string>(
+                    error: "Invalid model state after patch-operation."
+                    );
 
-            return Ok(patchedGame);
+                return UnprocessableEntity(errorResponse);
+            }
+
+            var successResponse = new ApiBaseResponse<GameDTO>(
+                data: patchedGame,
+                message: $"Game with ID {id} patched successfully."
+                );
+
+            return Ok(successResponse);
+
+            //if (patchDocument == null)
+            //return BadRequest("Patch document cannot be null.");
+
+            //var patchedGame = await _serviceManager.GameService.PatchGameAsync(id, patchDocument);
+            //if (patchedGame == null)
+            //return NotFound($"Game with ID {id} not found.");
+
+            //if (!ModelState.IsValid)
+            //return UnprocessableEntity(ModelState);
+
+            //return Ok(patchedGame);
         }
     }
 }
